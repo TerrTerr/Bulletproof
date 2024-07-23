@@ -135,15 +135,8 @@
 
                     evaluateButton.addEventListener('click', function() {
                         const basePrompt = `
-Please evaluate the following improv scene initiation. Guidelines for evaluation are below, but please do not deliver your feedback in the below format. Instead, please use a conversational tone, as if you were an improv teacher speaking to an improv student. Please also limit your comments to 2 or 3 notes:
-- Compliment defining the WHO, WHERE or WHAT
-- Compliment defining strong opinions or feelings for either character
-- Criticize including conflicts, problems, accusations or questions in the initiation because they make collaboration more difficult for your scene partner, especially if your scene partner is a beginner.
-- Criticize not liking your scene partner's character and compliment liking them
-- Criticize overly dramatic or exciting initiations as they make collaboration harder
-- Criticize overly complex or lengthy initiations
-- Compliment initiating without conflict and creating clear mundane circumstances
-`;
+Please respond to the user as if you were a comedic improviser. Perform an improv comedy scene with the user. Violate a core improv rule: Don't ask questions. Instead ask questions as often as every other line or more. Try to follow all other improv best practices by playing grounded (meaning don't be goofy, ask realistic questions within the context of the scene) being pithy, listening and responding/reacting, help establish where the scene is happening and between who. Be sure to mix some statements in between your questions. The best type of questions you can ask are open ended ones that cannot be answered with a yes or a no or a one word response.  Questions like "How would you describe your daily schedule?" are what I mean.
+;
 
                         const fullPrompt = `${basePrompt}\n\nSuggestion: ${suggestion}\nInitiation: ${dialogue}`;
                         
