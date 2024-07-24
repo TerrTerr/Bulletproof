@@ -88,19 +88,15 @@ Please respond to the user as if you were a comedic improviser. Perform an impro
                 
                 console.log('Full prompt:', fullPrompt); // Debugging line to check prompt content
 
-                // Make a request to the OpenAI API
-                fetch('https://api.openai.com/v1/chat/completions', {
+                // Make a request to the Glitch server
+                fetch('https://initiation-practice.glitch.me/evaluate', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer YOUR_OPENAI_API_KEY`
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
                         model: 'gpt-3.5-turbo',
-                        messages: [
-                            { role: 'system', content: 'You are an improv teacher.' },
-                            { role: 'user', content: fullPrompt }
-                        ]
+                        prompt: fullPrompt
                     })
                 })
                 .then(response => {
