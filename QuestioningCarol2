@@ -31,34 +31,54 @@
         #suggestionButton {
             font-size: 20px;
             padding: 10px 20px;
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
         }
         #suggestion {
             font-size: 24px;
             margin-top: 20px;
         }
         .toggle-container {
-            margin-top: 20px;
             display: flex;
-            justify-content: center;
+            justify-content: flex-start; /* Align to the left */
             align-items: center;
+            margin-top: 20px;
         }
-        .toggle-container label {
-            margin-right: 10px;
-            font-size: 18px;
+        .toggle-buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .toggle-buttons label {
+            cursor: pointer;
+            padding: 3px 8px; /* Smaller padding */
+            border: 1px solid #ccc;
+            margin-bottom: 5px; /* Reduced margin to lower button */
+            border-radius: 5px;
+            font-size: 12px; /* Smaller font size */
+        }
+        .toggle-buttons input[type="checkbox"] {
+            display: none;
+        }
+        .toggle-buttons input[type="checkbox"]:checked + label {
+            background-color: blue;
+            color: white;
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <div class="toggle-container">
+            <div class="toggle-buttons">
+                <input type="checkbox" id="userToggle" checked>
+                <label for="userToggle">You Initiate</label>
+                <input type="checkbox" id="carolToggle">
+                <label for="carolToggle">Questioning Carol Initiates</label>
+            </div>
+        </div>
         <button id="suggestionButton">Get Suggestion</button>
         <p id="suggestion"></p>
-        <div class="toggle-container">
-            <label for="toggle">Who initiates?</label>
-            <select id="toggle">
-                <option value="user">User Initiates</option>
-                <option value="chatgpt">ChatGPT Initiates</option>
-            </select>
-        </div>
         <div id="chat-container">
             <div id="chat-box"></div>
             <input type="text" id="user-input" placeholder="Type your message here...">
@@ -89,7 +109,7 @@
                 initialPrompt = `You are an improv character in a comedy scene. Your role is to ask questions as often as every other line or more. Follow all other improv best practices by playing grounded, being pithy, listening and responding/reacting, helping establish where the scene is happening and between who. Mix some statements in between your questions. The best questions are open-ended. Begin the conversation with an open-ended question. Respond only with your side of the conversation. Here is the suggestion: ${suggestion}`;
                 startTime = new Date();
 
-                if (document.getElementById('toggle').value === 'chatgpt') {
+                if (document.getElementById('carolToggle').checked) {
                     // ChatGPT initiates the scene
                     sendMessage(suggestion, false);
                 }
@@ -121,6 +141,23 @@
             if (!userMessage) return;
             document.getElementById('user-input').value = '';
             sendMessage(userMessage);
+        });
+
+        // Handle toggle functionality
+        document.getElementById('userToggle').addEventListener('change', function() {
+            if (this.checked) {
+                document.getElementById('carolToggle').checked = false;
+            } else {
+                document.getElementById('carolToggle').checked = true;
+            }
+        });
+
+        document.getElementById('carolToggle').addEventListener('change', function() {
+            if (this.checked) {
+                document.getElementById('userToggle').checked = false;
+            } else {
+                document.getElementById('userToggle').checked = true;
+            }
         });
     </script>
 </body>
