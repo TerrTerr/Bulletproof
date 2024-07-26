@@ -7,21 +7,39 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
         }
         .container {
-            text-align: center;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 600px;
+            padding: 20px;
         }
         #chat-container {
             margin-top: 20px;
             display: flex;
             flex-direction: column;
+            height: 400px;
+            overflow-y: auto;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #fafafa;
         }
         .message {
-            border-radius: 10px;
-            padding: 10px;
-            margin: 5px auto;
-            max-width: 80%;
+            border-radius: 20px;
+            padding: 10px 15px;
+            margin: 5px 0;
+            max-width: 75%;
             word-wrap: break-word;
+            font-size: 18px;
         }
         .user-message {
             background-color: #007bff;
@@ -30,21 +48,45 @@
         }
         .assistant-message {
             background-color: #00ffff;
+            color: black;
             align-self: flex-start;
         }
+        #user-input-container {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
         #user-input {
-            width: calc(100% - 20px);
+            flex-grow: 1;
             padding: 10px;
+            font-size: 18px;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            margin-right: 10px;
         }
         #send-button {
             padding: 10px;
+            font-size: 18px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+        #suggestionButton, #newSceneButton {
+            font-size: 18px;
+            padding: 10px 20px;
+            border: none;
+            color: white;
+            cursor: pointer;
+            margin: 10px;
+            border-radius: 5px;
         }
         #suggestionButton {
-            font-size: 20px;
-            padding: 10px 20px;
-            margin-left: auto;
-            margin-right: auto;
-            display: block;
+            background-color: green;
+        }
+        #newSceneButton {
+            background-color: red;
         }
         #suggestion {
             font-size: 24px;
@@ -88,11 +130,16 @@
                 <label for="carolToggle">Questioning Carol Initiates</label>
             </div>
         </div>
-        <button id="suggestionButton">Get Suggestion</button>
+        <div>
+            <button id="suggestionButton">Suggestion</button>
+            <button id="newSceneButton">Wipe</button>
+        </div>
         <p id="suggestion"></p>
         <div id="chat-container"></div>
-        <input type="text" id="user-input" placeholder="Type your message here...">
-        <button id="send-button">Send</button>
+        <div id="user-input-container">
+            <input type="text" id="user-input" placeholder="Type your message here...">
+            <button id="send-button">Send</button>
+        </div>
     </div>
 
     <script>
@@ -114,7 +161,7 @@
                 const randomIndex = Math.floor(Math.random() * suggestions.length);
                 const suggestion = suggestions[randomIndex];
                 document.getElementById('suggestion').innerText = suggestion;
-                initialPrompt = `You are an improv character in a comedy scene. Your role is to ask questions as often as every other line or more. Follow all other improv best practices by playing grounded, being pithy, listening and responding/reacting, helping establish where the scene is happening and between who. Mix some statements in between your questions. The best questions are open-ended. Begin the conversation with an open-ended question. Respond only with your side of the conversation. Here is the suggestion: ${suggestion}`;
+                initialPrompt = `You are an improv character in a comedy scene. Your role is to ask questions as often as every other line or more. Follow all other improv best practices by playing grounded, being pithy, listening and responding/reacting, helping establish where the scene is happening and between who. Mix some statements in between your questions. The best questions are open-ended. Begin the conversation with an open-ended question. Respond only with your side of the conversation, provide only one line of dialogue at a time, and limit your response to 1-2 sentences. Here is the suggestion: ${suggestion}`;
                 startTime = new Date();
 
                 if (document.getElementById('carolToggle').checked) {
@@ -124,6 +171,22 @@
                 console.log('No suggestions available');
             }
         });
+
+        document.getElementById('newSceneButton').addEventListener('click', function() {
+            document.getElementById('chat-container').innerHTML = '';
+            document.getElementById('suggestion').innerText = '';
+            document.getElementById('user-input').value = '';
+        });
+
+        const trimResponse = (response) => {
+            response = response.replace(/\n/g, ' '); // Remove line breaks
+            response = response.replace(/[^ ]+:/g, ''); // Remove words followed by colons
+            const sentences = response.match(/[^.!?]+[.!?]+/g) || [response];
+            if (sentences.length > 2) {
+                return sentences.slice(0, 2).join(' ');
+            }
+            return response;
+        };
 
         const sendMessage = async (message, displayMessage = true) => {
             const chatContainer = document.getElementById('chat-container');
@@ -141,7 +204,8 @@
             });
 
             const data = await response.json();
-            const assistantMessage = data.choices[0].message.content.replace('Assistant: ', '');
+            let assistantMessage = data.choices[0].message.content.replace('Assistant: ', '');
+            assistantMessage = trimResponse(assistantMessage);
 
             const assistantMessageElement = document.createElement('div');
             assistantMessageElement.className = 'message assistant-message';
@@ -156,6 +220,13 @@
             if (!userMessage) return;
             document.getElementById('user-input').value = '';
             sendMessage(userMessage);
+        });
+
+        document.getElementById('user-input').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                document.getElementById('send-button').click();
+            }
         });
 
         document.getElementById('userToggle').addEventListener('change', function() {
@@ -176,3 +247,4 @@
     </script>
 </body>
 </html>
+
