@@ -3,193 +3,300 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Improv Suggestions</title>
+    <title>Improv Comedy Scene</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap');
         body {
             font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
         }
         .container {
-            text-align: center;
-        }
-        table {
-            margin: 20px auto;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             width: 80%;
-            border-collapse: collapse;
+            max-width: 600px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
         }
-        th, td {
-            border: 1px solid #ccc;
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            width: 100%;
+        }
+        .header .title {
+            font-size: 40px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: bold;
+        }
+        .header .description {
+            font-size: 14px;
+            margin-top: 5px;
+            font-style: italic;
+        }
+        .buttons-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-top: 20px;
+        }
+        .buttons {
+            display: flex;
+            flex-direction: column;
+        }
+        .buttons img {
+            width: 12.5px;  /* Quarter of 150px */
+            height: auto;
+            border-radius: 10px;
+            margin-left: 20px;
+        }
+        #chat-container {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            height: 400px;
+            overflow-y: auto;
             padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #fafafa;
+            width: 100%;
+        }
+        .message {
+            border-radius: 20px;
+            padding: 10px 15px;
+            margin: 5px 0;
+            max-width: 75%;
+            word-wrap: break-word;
             font-size: 18px;
         }
-        th {
-            width: 20%;
+        .user-message {
+            background-color: #007bff;
+            color: white;
+            align-self: flex-end;
         }
-        th:nth-child(2) {
-            width: 70%;
+        .assistant-message {
+            background-color: #00ffff;
+            color: black;
+            align-self: flex-start;
         }
-        th:nth-child(3) {
-            width: 10%;
+        #user-input-container {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+            width: 100%;
         }
-        th:nth-child(4) {
-            width: 10%;
+        #user-input {
+            flex-grow: 1;
+            padding: 10px;
+            font-size: 18px;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            margin-right: 10px;
+        }
+        #send-button {
+            padding: 10px;
+            font-size: 18px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+        #suggestionButton, #newSceneButton {
+            font-size: 18px;
+            padding: 10px 20px;
+            border: none;
+            color: white;
+            cursor: pointer;
+            margin: 10px;
+            border-radius: 5px;
+        }
+        #suggestionButton {
+            background-color: green;
+        }
+        #newSceneButton {
+            background-color: red;
+        }
+        #suggestion {
+            font-size: 24px;
+            margin-top: 20px;
+        }
+        .toggle-container {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .toggle-buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .toggle-buttons label {
+            cursor: pointer;
+            padding: 3px 8px;
+            border: 1px solid #ccc;
+            margin-bottom: 5px;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+        .toggle-buttons input[type="checkbox"] {
+            display: none;
+        }
+        .toggle-buttons input[type="checkbox"]:checked + label {
+            background-color: blue;
+            color: white;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <button id="suggestionButton" style="font-size: 20px; padding: 10px 20px;">Get Suggestion</button>
-        <p id="suggestion" style="font-size: 24px; margin-top: 20px;"></p>
-        <input type="text" id="dialogueInput" placeholder="Type your line of dialogue..." style="font-size: 18px; padding: 10px; width: 80%; margin-top: 20px;">
-        <table id="suggestionsTable">
-            <thead>
-                <tr>
-                    <th>Suggestion</th>
-                    <th>Initiation</th>
-                    <th>Time</th>
-                    <th>Evaluate</th>
-                </tr>
-            </thead>
-            <tbody id="suggestions"></tbody>
-        </table>
-        <div id="evaluationResult" style="margin-top: 20px; font-size: 18px;"></div>
+        <div class="header">
+            <div>
+                <div class="title">Questioning Carol</div>
+                <div class="description">
+                    Carol is an improviser who asks a lot of questions. If you can do a good scene with Carol then you can do a good one at your next improv audition no matter how many questions your scene partner asks you!
+                </div>
+            </div>
+        </div>
+        <div class="buttons-container">
+            <div class="buttons">
+                <div class="toggle-container">
+                    <div class="toggle-buttons">
+                        <input type="checkbox" id="userToggle" checked>
+                        <label for="userToggle">You Initiate</label>
+                        <input type="checkbox" id="carolToggle">
+                        <label for="carolToggle">Questioning Carol Initiates</label>
+                    </div>
+                </div>
+                <div>
+                    <button id="suggestionButton">Suggestion</button>
+                    <button id="newSceneButton">Wipe</button>
+                </div>
+            </div>
+            <img src="https://raw.githubusercontent.com/TerrTerr/Bulletproof/main/Questioning%20Carol%20Headshot.png" alt="Questioning Carol">
+        </div>
+        <p id="suggestion"></p>
+        <div id="chat-container"></div>
+        <div id="user-input-container">
+            <input type="text" id="user-input" placeholder="Type your message here...">
+            <button id="send-button">Send</button>
+        </div>
     </div>
 
     <script>
         let suggestions = [];
+        let initialPrompt;
         let startTime;
 
-        // Fetch the CSV file and parse it
         document.addEventListener('DOMContentLoaded', function() {
             fetch('https://raw.githubusercontent.com/TerrTerr/Initiation_Practice2/main/suggestions.csv')
                 .then(response => response.text())
                 .then(data => {
-                    console.log('CSV data fetched:', data);
-                    suggestions = data.split('\n').slice(1).map(line => line.trim()); // Parse CSV data
-                    console.log('Parsed suggestions:', suggestions);
+                    suggestions = data.split('\n').slice(1).map(line => line.trim());
                 })
                 .catch(error => console.error('Error fetching suggestions:', error));
         });
 
         document.getElementById('suggestionButton').addEventListener('click', function() {
-            console.log('Suggestion button clicked');
             if (suggestions.length > 0) {
                 const randomIndex = Math.floor(Math.random() * suggestions.length);
                 const suggestion = suggestions[randomIndex];
-                console.log('Selected suggestion:', suggestion);
                 document.getElementById('suggestion').innerText = suggestion;
-                startTime = new Date();  // Start the timer
+                initialPrompt = `You are an improv character in a comedy scene. Your role is to ask questions as often as every other line or more. Follow all other improv best practices by playing grounded, being pithy, listening and responding/reacting, helping establish where the scene is happening and between who. Mix some statements in between your questions. The best questions are open-ended. Begin the conversation with an open-ended question. Respond only with your side of the conversation, provide only one line of dialogue at a time, and limit your response to 1-2 sentences. Here is the suggestion: ${suggestion}`;
+                startTime = new Date();
+
+                if (document.getElementById('carolToggle').checked) {
+                    sendMessage(suggestion, false);
+                }
             } else {
                 console.log('No suggestions available');
             }
         });
 
-        document.getElementById('dialogueInput').addEventListener('keypress', function(event) {
+        document.getElementById('newSceneButton').addEventListener('click', function() {
+            document.getElementById('chat-container').innerHTML = '';
+            document.getElementById('suggestion').innerText = '';
+            document.getElementById('user-input').value = '';
+        });
+
+        const trimResponse = (response) => {
+            response = response.replace(/\n/g, ' '); // Remove line breaks
+            response = response.replace(/[^ ]+:/g, ''); // Remove words followed by colons
+            const sentences = response.match(/[^.!?]+[.!?]+/g) || [response];
+            if (sentences.length > 2) {
+                return sentences.slice(0, 2).join(' ');
+            }
+            return response;
+        };
+
+        const sendMessage = async (message, displayMessage = true) => {
+            const chatContainer = document.getElementById('chat-container');
+            if (displayMessage) {
+                const userMessageElement = document.createElement('div');
+                userMessageElement.className = 'message user-message';
+                userMessageElement.innerText = message;
+                chatContainer.appendChild(userMessageElement);
+            }
+
+            const response = await fetch('https://improvaise.glitch.me/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: initialPrompt + "\nUser: " + message })
+            });
+
+            const data = await response.json();
+            let assistantMessage = data.choices[0].message.content.replace('Assistant: ', '');
+            assistantMessage = trimResponse(assistantMessage);
+
+            const assistantMessageElement = document.createElement('div');
+            assistantMessageElement.className = 'message assistant-message';
+            assistantMessageElement.innerText = assistantMessage;
+            chatContainer.appendChild(assistantMessageElement);
+
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        };
+
+        document.getElementById('send-button').addEventListener('click', () => {
+            const userMessage = document.getElementById('user-input').value;
+            if (!userMessage) return;
+            document.getElementById('user-input').value = '';
+            sendMessage(userMessage);
+        });
+
+        document.getElementById('user-input').addEventListener('keypress', function(event) {
             if (event.key === 'Enter') {
-                const suggestion = document.getElementById('suggestion').innerText;
-                const dialogue = event.target.value;
-                if (suggestion && dialogue) {
-                    const endTime = new Date();
-                    let timeTaken = Math.round((endTime - startTime) / 1000); // Calculate time taken in seconds and round to the nearest whole number
-                    
-                    let minutes = Math.floor(timeTaken / 60);
-                    let seconds = timeTaken % 60;
-                    let timeDisplay = seconds + ' sec';
-                    if (minutes > 0) {
-                        timeDisplay = minutes + ' min, ' + timeDisplay;
-                    }
+                event.preventDefault();
+                document.getElementById('send-button').click();
+            }
+        });
 
-                    const tableBody = document.getElementById('suggestions');
-                    const row = document.createElement('tr');
-                    const suggestionCell = document.createElement('td');
-                    const dialogueCell = document.createElement('td');
-                    const timeCell = document.createElement('td');
-                    const evaluateCell = document.createElement('td');
-                    const evaluateButton = document.createElement('button');
+        document.getElementById('userToggle').addEventListener('change', function() {
+            if (this.checked) {
+                document.getElementById('carolToggle').checked = false;
+            } else {
+                document.getElementById('carolToggle').checked = true;
+            }
+        });
 
-                    suggestionCell.style.border = '1px solid #ccc';
-                    suggestionCell.style.padding = '10px';
-                    suggestionCell.style.fontSize = '18px';
-                    suggestionCell.style.width = '20%';
-
-                    dialogueCell.style.border = '1px solid #ccc';
-                    dialogueCell.style.padding = '10px';
-                    dialogueCell.style.fontSize = '18px';
-                    dialogueCell.style.width = '70%';
-
-                    timeCell.style.border = '1px solid #ccc';
-                    timeCell.style.padding = '10px';
-                    timeCell.style.fontSize = '18px';
-                    timeCell.style.width = '10%';
-
-                    evaluateCell.style.border = '1px solid #ccc';
-                    evaluateCell.style.padding = '10px';
-                    evaluateCell.style.fontSize = '18px';
-                    evaluateCell.style.width = '10%';
-
-                    suggestionCell.innerText = suggestion;
-                    dialogueCell.innerText = dialogue;
-                    timeCell.innerText = timeDisplay;
-                    evaluateButton.innerText = 'Evaluate';
-                    evaluateButton.style.fontSize = '16px';
-                    evaluateButton.style.padding = '5px 10px';
-
-                    evaluateButton.addEventListener('click', function() {
-                        const basePrompt = `
-Please respond to the user as if you were a comedic improviser. Perform an improv comedy scene with the user. Violate a core improv rule: Don't ask questions. Instead ask questions as often as every other line or more. Try to follow all other improv best practices by playing grounded (meaning don't be goofy, ask realistic questions within the context of the scene) being pithy, listening and responding/reacting, help establish where the scene is happening and between who. Be sure to mix some statements in between your questions. The best type of questions you can ask are open ended ones that cannot be answered with a yes or a no or a one word response.  Questions like "How would you describe your daily schedule?" are what I mean.
-;
-
-                        const fullPrompt = `${basePrompt}\n\nSuggestion: ${suggestion}\nInitiation: ${dialogue}`;
-                        
-                        console.log('Full prompt:', fullPrompt); // Debugging line to check prompt content
-
-                        // Make a request to the OpenAI API
-                        fetch('https://api.openai.com/v1/chat/completions', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': `Bearer YOUR_OPENAI_API_KEY`
-                            },
-                            body: JSON.stringify({
-                                model: 'gpt-3.5-turbo',
-                                messages: [
-                                    { role: 'system', content: 'You are an improv teacher.' },
-                                    { role: 'user', content: fullPrompt }
-                                ]
-                            })
-                        })
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error('Network response was not ok');
-                            }
-                            return response.json();
-                        })
-                        .then(result => {
-                            console.log('API response:', result); // Debugging line to check response content
-                            if (result.choices && result.choices.length > 0) {
-                                console.log('Response text:', result.choices[0].message.content); // Log the response text
-                                document.getElementById('evaluationResult').innerText = result.choices[0].message.content.trim();
-                            } else {
-                                document.getElementById('evaluationResult').innerText = "Evaluation completed.";
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            document.getElementById('evaluationResult').innerText = "Error in evaluation.";
-                        });
-                    });
-
-                    evaluateCell.appendChild(evaluateButton);
-                    row.appendChild(suggestionCell);
-                    row.appendChild(dialogueCell);
-                    row.appendChild(timeCell);
-                    row.appendChild(evaluateCell);
-                    tableBody.insertBefore(row, tableBody.firstChild); // Add the new row at the top
-
-                    document.getElementById('suggestion').innerText = '';  // Clear the suggestion
-                    event.target.value = '';
-                }
+        document.getElementById('carolToggle').addEventListener('change', function() {
+            if (this.checked) {
+                document.getElementById('userToggle').checked = false;
+            } else {
+                document.getElementById('userToggle').checked = true;
             }
         });
     </script>
 </body>
 </html>
+
