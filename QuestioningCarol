@@ -411,10 +411,12 @@
 
             // Set up the document
             doc.setFont("Courier");
-            doc.setFontSize(24);
+            doc.setFontSize(40);
             doc.setFont(undefined, "bold");
             doc.text(`THE ${suggestion.toUpperCase()} SCENE`, doc.internal.pageSize.getWidth() / 2, 20, {align: "center"});
-            doc.setFontSize(12);
+            doc.setLineWidth(0.5);
+            doc.line(10, 25, doc.internal.pageSize.getWidth() - 10, 25); // Underline Title
+            doc.setFontSize(16);
             doc.setFont(undefined, "normal");
 
             let yOffset = 40;
@@ -424,7 +426,7 @@
             yOffset += 20;
 
             // Add chat messages with consistent spacing and increased margins
-            const margin = 20; // Double the margin size
+            const margin = 25; // Margin size
             chatMessages.forEach((message, index) => {
                 const text = message.classList.contains('user-message') ? `USER: ${message.innerText}` : `QUESTIONING CAROL: ${message.innerText}`;
                 const cleanedText = removeImprovWord(text);
