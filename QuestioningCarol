@@ -415,7 +415,7 @@
             doc.setFont(undefined, "bold");
             doc.text(`THE ${suggestion.toUpperCase()} SCENE`, doc.internal.pageSize.getWidth() / 2, 20, {align: "center"});
             doc.setLineWidth(0.5);
-            doc.line(10, 25, doc.internal.pageSize.getWidth() - 10, 25); // Underline Title
+            doc.line(25, 10, doc.internal.pageSize.getWidth() - 25, 10); // Underline Title
             doc.setFontSize(16);
             doc.setFont(undefined, "normal");
 
