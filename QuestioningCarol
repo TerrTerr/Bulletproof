@@ -20,44 +20,78 @@
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             width: 80%;
-            max-width: 600px;
+            max-width: 800px;
             padding: 20px;
             display: flex;
             flex-direction: column;
-            align-items: flex-start;
+            align-items: center;
         }
         .header {
             display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
+            justify-content: center;
+            align-items: center;
             width: 100%;
+            text-align: center;
         }
         .header .title {
-            font-size: 40px;
+            font-size: 55px;
             font-family: 'Poppins', sans-serif;
             font-weight: bold;
+            text-decoration: underline;
         }
-        .header .description {
-            font-size: 14px;
-            margin-top: 5px;
-            font-style: italic;
-        }
-        .buttons-container {
+        .content {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
             width: 100%;
             margin-top: 20px;
         }
-        .buttons {
+        .content .image {
+            flex-shrink: 0;
+        }
+        .content .details {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            margin-left: 20px;
+        }
+        .content .description {
+            font-size: 24px;
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+        .content .buttons {
             display: flex;
             flex-direction: column;
         }
-        .buttons img {
-            width: 12.5px;  /* Quarter of 150px */
-            height: auto;
+        .content .buttons img {
+            width: 50px;
+            height: 50px;
             border-radius: 10px;
-            margin-left: 20px;
+        }
+        .content .buttons-container {
+            display: flex;
+            margin-top: 10px;
+        }
+        .content .buttons-container button {
+            font-size: 18px;
+            padding: 15px 30px;
+            border: none;
+            color: white;
+            cursor: pointer;
+            margin: 10px;
+            border-radius: 5px;
+        }
+        #suggestionButton {
+            background-color: green;
+            padding: 15px 30px; /* 50% larger */
+        }
+        #newSceneButton {
+            background-color: red;
+            padding: 15px 30px; /* Same size as Suggestion button */
+        }
+        #suggestion {
+            font-size: 24px;
+            margin-top: 20px;
+            text-align: center;
         }
         #chat-container {
             margin-top: 20px;
@@ -91,45 +125,39 @@
         }
         #user-input-container {
             display: flex;
+            flex-direction: column;
             align-items: center;
             margin-top: 10px;
             width: 100%;
         }
         #user-input {
-            flex-grow: 1;
+            width: 100%;
             padding: 10px;
             font-size: 18px;
             border: 1px solid #ccc;
             border-radius: 20px;
-            margin-right: 10px;
+            margin-bottom: 10px;
         }
-        #send-button {
+        #buttons-container {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+        #send-button, #button-button {
             padding: 10px;
             font-size: 18px;
-            background-color: #007bff;
-            color: white;
             border: none;
             border-radius: 20px;
             cursor: pointer;
+            margin: 5px;
         }
-        #suggestionButton, #newSceneButton {
-            font-size: 18px;
-            padding: 10px 20px;
-            border: none;
+        #send-button {
+            background-color: #007bff;
             color: white;
-            cursor: pointer;
-            margin: 10px;
-            border-radius: 5px;
         }
-        #suggestionButton {
-            background-color: green;
-        }
-        #newSceneButton {
+        #button-button {
             background-color: red;
-        }
-        #suggestion {
-            font-size: 24px;
-            margin-top: 20px;
+            color: white;
         }
         .toggle-container {
             display: flex;
@@ -144,11 +172,11 @@
         }
         .toggle-buttons label {
             cursor: pointer;
-            padding: 3px 8px;
+            padding: 10px 20px;
             border: 1px solid #ccc;
             margin-bottom: 5px;
             border-radius: 5px;
-            font-size: 12px;
+            font-size: 18px;
         }
         .toggle-buttons input[type="checkbox"] {
             display: none;
@@ -157,20 +185,39 @@
             background-color: blue;
             color: white;
         }
+        #download-button {
+            background-color: #3b5998;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+        #download-container {
+            display: none; /* Hide the download container from view */
+        }
+        #download-container a {
+            color: blue;
+        }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
 </head>
 <body>
-    <div class="container">
+    <div class="container" id="scene-container">
         <div class="header">
-            <div>
-                <div class="title">Questioning Carol</div>
+            <div class="title">Questioning Carol</div>
+        </div>
+        <div class="content">
+            <div class="image">
+                <img src="https://raw.githubusercontent.com/TerrTerr/Bulletproof/main/Questioning%20Carol%20Headshot.png" alt="Questioning Carol">
+            </div>
+            <div class="details">
                 <div class="description">
                     Carol is an improviser who asks a lot of questions. If you can do a good scene with Carol then you can do a good one at your next improv audition no matter how many questions your scene partner asks you!
                 </div>
-            </div>
-        </div>
-        <div class="buttons-container">
-            <div class="buttons">
                 <div class="toggle-container">
                     <div class="toggle-buttons">
                         <input type="checkbox" id="userToggle" checked>
@@ -179,25 +226,38 @@
                         <label for="carolToggle">Questioning Carol Initiates</label>
                     </div>
                 </div>
-                <div>
+                <div class="buttons-container">
                     <button id="suggestionButton">Suggestion</button>
                     <button id="newSceneButton">Wipe</button>
                 </div>
             </div>
-            <img src="https://raw.githubusercontent.com/TerrTerr/Bulletproof/main/Questioning%20Carol%20Headshot.png" alt="Questioning Carol">
         </div>
         <p id="suggestion"></p>
         <div id="chat-container"></div>
         <div id="user-input-container">
             <input type="text" id="user-input" placeholder="Type your message here...">
-            <button id="send-button">Send</button>
+            <div id="buttons-container">
+                <button id="send-button">Send</button>
+                <button id="button-button">Button</button>
+            </div>
         </div>
+        <div>
+            <button id="download-button">Download My Scene</button>
+        </div>
+    </div>
+
+    <div id="download-container">
+        <p>An improv scene with Questioning Carol</p>
+        <p id="download-suggestion"></p>
+        <div id="download-chat"></div>
+        <p>Improvised @ <a href="https://www.radicalagreement.com/">The Radical Agreement Project</a></p>
     </div>
 
     <script>
         let suggestions = [];
         let initialPrompt;
         let startTime;
+        let isPendingResponse = false; // Flag to check pending response
 
         document.addEventListener('DOMContentLoaded', function() {
             fetch('https://raw.githubusercontent.com/TerrTerr/Initiation_Practice2/main/suggestions.csv')
@@ -212,8 +272,9 @@
             if (suggestions.length > 0) {
                 const randomIndex = Math.floor(Math.random() * suggestions.length);
                 const suggestion = suggestions[randomIndex];
-                document.getElementById('suggestion').innerText = suggestion;
-                initialPrompt = `You are an improv character in a comedy scene. Your role is to ask questions as often as every other line or more. Follow all other improv best practices by playing grounded, being pithy, listening and responding/reacting, helping establish where the scene is happening and between who. Mix some statements in between your questions. The best questions are open-ended. Begin the conversation with an open-ended question. Respond only with your side of the conversation, provide only one line of dialogue at a time, and limit your response to 1-2 sentences. Here is the suggestion: ${suggestion}`;
+                document.getElementById('suggestion').innerText = suggestion.charAt(0).toUpperCase() + suggestion.slice(1);
+                document.getElementById('download-suggestion').innerText = suggestion.charAt(0).toUpperCase() + suggestion.slice(1);
+                initialPrompt = `You are an improv character in a comedy scene. Your role is to ask questions as often as every other line or more. Follow all other improv best practices by playing grounded, being pithy, listening and responding/reacting, helping establish where the scene is happening and between who. Mix some statements in between your questions. The best questions are open-ended. Begin the conversation with an open-ended question. Respond only with your side of the conversation, provide only one line of dialogue at a time, and limit your response to one sentence. Here is the suggestion: ${suggestion}`;
                 startTime = new Date();
 
                 if (document.getElementById('carolToggle').checked) {
@@ -226,7 +287,9 @@
 
         document.getElementById('newSceneButton').addEventListener('click', function() {
             document.getElementById('chat-container').innerHTML = '';
+            document.getElementById('download-chat').innerHTML = '';
             document.getElementById('suggestion').innerText = '';
+            document.getElementById('download-suggestion').innerText = '';
             document.getElementById('user-input').value = '';
         });
 
@@ -234,37 +297,58 @@
             response = response.replace(/\n/g, ' '); // Remove line breaks
             response = response.replace(/[^ ]+:/g, ''); // Remove words followed by colons
             const sentences = response.match(/[^.!?]+[.!?]+/g) || [response];
-            if (sentences.length > 2) {
-                return sentences.slice(0, 2).join(' ');
+            if (sentences.length > 1) {
+                return sentences[0];
             }
             return response;
         };
 
+        const removeImprovWord = (text) => {
+            return text.replace(/\bImprov\b/g, '');
+        };
+
         const sendMessage = async (message, displayMessage = true) => {
+            if (isPendingResponse) return; // Prevent sending if there's a pending response
+            isPendingResponse = true; // Set flag to indicate a response is pending
+
             const chatContainer = document.getElementById('chat-container');
+            const downloadChatContainer = document.getElementById('download-chat');
             if (displayMessage) {
                 const userMessageElement = document.createElement('div');
                 userMessageElement.className = 'message user-message';
                 userMessageElement.innerText = message;
                 chatContainer.appendChild(userMessageElement);
+
+                const userMessageElementClone = userMessageElement.cloneNode(true);
+                downloadChatContainer.appendChild(userMessageElementClone);
             }
 
-            const response = await fetch('https://improvaise.glitch.me/chat', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: initialPrompt + "\nUser: " + message })
-            });
+            try {
+                const response = await fetch('https://improvaise.glitch.me/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: initialPrompt + "\nUser: " + message })
+                });
 
-            const data = await response.json();
-            let assistantMessage = data.choices[0].message.content.replace('Assistant: ', '');
-            assistantMessage = trimResponse(assistantMessage);
+                const data = await response.json();
+                let assistantMessage = data.choices[0].message.content.replace('Assistant: ', '');
+                assistantMessage = trimResponse(assistantMessage);
+                assistantMessage = removeImprovWord(assistantMessage);
 
-            const assistantMessageElement = document.createElement('div');
-            assistantMessageElement.className = 'message assistant-message';
-            assistantMessageElement.innerText = assistantMessage;
-            chatContainer.appendChild(assistantMessageElement);
+                const assistantMessageElement = document.createElement('div');
+                assistantMessageElement.className = 'message assistant-message';
+                assistantMessageElement.innerText = assistantMessage;
+                chatContainer.appendChild(assistantMessageElement);
 
-            chatContainer.scrollTop = chatContainer.scrollHeight;
+                const assistantMessageElementClone = assistantMessageElement.cloneNode(true);
+                downloadChatContainer.appendChild(assistantMessageElementClone);
+
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            } catch (error) {
+                console.error('Error sending message:', error);
+            } finally {
+                isPendingResponse = false; // Reset flag after response is handled
+            }
         };
 
         document.getElementById('send-button').addEventListener('click', () => {
@@ -272,6 +356,25 @@
             if (!userMessage) return;
             document.getElementById('user-input').value = '';
             sendMessage(userMessage);
+        });
+
+        document.getElementById('button-button').addEventListener('click', () => {
+            const userMessage = document.getElementById('user-input').value;
+            if (!userMessage) return;
+            document.getElementById('user-input').value = '';
+
+            const chatContainer = document.getElementById('chat-container');
+            const downloadChatContainer = document.getElementById('download-chat');
+
+            const userMessageElement = document.createElement('div');
+            userMessageElement.className = 'message user-message';
+            userMessageElement.innerText = userMessage;
+            chatContainer.appendChild(userMessageElement);
+
+            const userMessageElementClone = userMessageElement.cloneNode(true);
+            downloadChatContainer.appendChild(userMessageElementClone);
+
+            chatContainer.scrollTop = chatContainer.scrollHeight;
         });
 
         document.getElementById('user-input').addEventListener('keypress', function(event) {
@@ -296,7 +399,56 @@
                 document.getElementById('userToggle').checked = true;
             }
         });
+
+        document.getElementById('download-button').addEventListener('click', function() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const suggestion = document.getElementById('download-suggestion').innerText;
+            const chatMessages = Array.from(document.getElementById('download-chat').children);
+            const footer = 'Improvised @ The Radical Agreement Project';
+            const url = 'https://www.radicalagreement.com/';
+
+            // Set up the document
+            doc.setFont("Courier");
+            doc.setFontSize(24);
+            doc.setFont(undefined, "bold");
+            doc.text(`THE ${suggestion.toUpperCase()} SCENE`, doc.internal.pageSize.getWidth() / 2, 20, {align: "center"});
+            doc.setFontSize(12);
+            doc.setFont(undefined, "normal");
+
+            let yOffset = 40;
+
+            doc.setFont("Courier", "bold");
+            doc.text(`Suggestion: ${suggestion}`, doc.internal.pageSize.getWidth() / 2, yOffset, {align: "center"});
+            yOffset += 20;
+
+            // Add chat messages with consistent spacing and increased margins
+            const margin = 20; // Double the margin size
+            chatMessages.forEach((message, index) => {
+                const text = message.classList.contains('user-message') ? `USER: ${message.innerText}` : `QUESTIONING CAROL: ${message.innerText}`;
+                const cleanedText = removeImprovWord(text);
+                const lines = doc.splitTextToSize(cleanedText, doc.internal.pageSize.getWidth() - 2 * margin);
+                doc.text(lines, margin, yOffset);
+                yOffset += lines.length * 10 + 5; // Added consistent spacing
+
+                // Check for page overflow
+                if (yOffset > doc.internal.pageSize.getHeight() - 20) {
+                    doc.addPage();
+                    yOffset = 20;
+                }
+            });
+
+            // Add footer
+            doc.setTextColor(0, 0, 255);
+            doc.textWithLink(footer, 10, doc.internal.pageSize.getHeight() - 10, {url: url});
+            doc.setTextColor(0, 0, 0);
+
+            const fileName = `${suggestion.replace(/\s+/g, '_')}_scene.pdf`;
+            doc.save(fileName);
+        });
     </script>
 </body>
 </html>
+
 
