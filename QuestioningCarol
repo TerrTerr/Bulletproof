@@ -411,11 +411,11 @@
 
             // Set up the document
             doc.setFont("Courier");
-            doc.setFontSize(40);
+            doc.setFontSize(30);
             doc.setFont(undefined, "bold");
-            doc.text(`THE ${suggestion.toUpperCase()} SCENE`, doc.internal.pageSize.getWidth() / 2, 20, {align: "center"});
-            doc.setLineWidth(0.5);
-            doc.line(25, 23, doc.internal.pageSize.getWidth() - 25, 23); // Underline Title
+            doc.text(`THE IMPROVISED ${suggestion.toUpperCase()} SCENE`, doc.internal.pageSize.getWidth() / 2, 20, {align: "center"});
+            doc.setLineWidth(1);
+            doc.line(25, 22, doc.internal.pageSize.getWidth() - 25, 22); // Underline Title
             doc.setFontSize(16);
             doc.setFont(undefined, "normal");
 
@@ -424,16 +424,21 @@
 
             chatMessages.forEach((message, index) => {
                 const speaker = message.classList.contains('user-message') ? 'USER' : 'QUESTIONING CAROL';
-                const text = `${speaker}: ${message.innerText}`;
                 const cleanedText = removeImprovWord(text);
-                const lines = doc.splitTextToSize(cleanedText.replace(`${speaker}:`, ''), doc.internal.pageSize.getWidth() - 2 * margin);
+                const lines = doc.splitTextToSize(cleanedText, doc.internal.pageSize.getWidth() - 2 * margin);
 
-                //Bold the speaker name & colon
+                //Center, Bold speaker name
                 doc.setFont("Courier", "bold");
-                doc.text(`${speaker}:`, margin, yOffset);
+                doc.text(speaker, doc.internal.pageSize.getWidth() / 2, yOffset, {align: "center"});
+                yOffset += 10;
                 doc.setFont("Courier", "normal");
-                doc.text(lines, margin + doc.getTextWidth(`${speaker}: `), yOffset);
-                yOffset += lines.length * 10 + 5; // Added consistent spacing
+
+                //adding lines
+                Lines.forEach((line) => {
+                    doc.text(line, margin, yOffset);
+                    yOffset += 10
+                });
+                yOffset += 5
 
                 // Check for page overflow
                 if (yOffset > doc.internal.pageSize.getHeight() - 20) {
