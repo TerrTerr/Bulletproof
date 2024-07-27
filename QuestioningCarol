@@ -415,23 +415,24 @@
             doc.setFont(undefined, "bold");
             doc.text(`THE ${suggestion.toUpperCase()} SCENE`, doc.internal.pageSize.getWidth() / 2, 20, {align: "center"});
             doc.setLineWidth(0.5);
-            doc.line(25, 10, doc.internal.pageSize.getWidth() - 25, 10); // Underline Title
+            doc.line(25, 23, doc.internal.pageSize.getWidth() - 25, 23); // Underline Title
             doc.setFontSize(16);
             doc.setFont(undefined, "normal");
 
             let yOffset = 40;
+            const margin = 25;
 
-            doc.setFont("Courier", "bold");
-            doc.text(`Suggestion: ${suggestion}`, doc.internal.pageSize.getWidth() / 2, yOffset, {align: "center"});
-            yOffset += 20;
-
-            // Add chat messages with consistent spacing and increased margins
-            const margin = 25; // Margin size
             chatMessages.forEach((message, index) => {
-                const text = message.classList.contains('user-message') ? `USER: ${message.innerText}` : `QUESTIONING CAROL: ${message.innerText}`;
+                const speaker = message.classList.contains('user-message') ? 'USER' : 'QUESTIONING CAROL';
+                const text = `${speaker}: ${message.innerText}`;
                 const cleanedText = removeImprovWord(text);
-                const lines = doc.splitTextToSize(cleanedText, doc.internal.pageSize.getWidth() - 2 * margin);
-                doc.text(lines, margin, yOffset);
+                const lines = doc.splitTextToSize(cleanedText.replace(`${speaker}:`, ''), doc.internal.pageSize.getWidth() - 2 * margin);
+
+                //Bold the speaker name & colon
+                doc.setFont("Courier", "bold");
+                doc.text(`${speaker}:`, margin, yOffset);
+                doc.setFont("Courier", "normal");
+                doc.text(lines, margin + doc.getTextWidth(`${speaker}: `), yOffset);
                 yOffset += lines.length * 10 + 5; // Added consistent spacing
 
                 // Check for page overflow
