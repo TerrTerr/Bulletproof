@@ -109,6 +109,7 @@
             background-color: #007bff;
             color: white;
             align-self: flex-end;
+            text-align: right; 
         }
         .assistant-message {
             background-color: #00ffff;
