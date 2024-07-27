@@ -82,11 +82,11 @@
         }
         #suggestionButton {
             background-color: green;
-            padding: 15px 30px; /* 50% larger */
+            padding: 15px 30px;
         }
         #newSceneButton {
             background-color: red;
-            padding: 15px 30px; /* Same size as Suggestion button */
+            padding: 15px 30px;
         }
         #suggestion {
             font-size: 24px;
@@ -196,7 +196,7 @@
             margin-top: 20px;
         }
         #download-container {
-            display: none; /* Hide the download container from view */
+            display: none;
         }
         #download-container a {
             color: blue;
@@ -257,7 +257,7 @@
         let suggestions = [];
         let initialPrompt;
         let startTime;
-        let isPendingResponse = false; // Flag to check pending response
+        let isPendingResponse = false;
 
         document.addEventListener('DOMContentLoaded', function() {
             fetch('https://raw.githubusercontent.com/TerrTerr/Initiation_Practice2/main/suggestions.csv')
@@ -294,8 +294,8 @@
         });
 
         const trimResponse = (response) => {
-            response = response.replace(/\n/g, ' '); // Remove line breaks
-            response = response.replace(/[^ ]+:/g, ''); // Remove words followed by colons
+            response = response.replace(/\n/g, ' ');
+            response = response.replace(/[^ ]+:/g, '');
             const sentences = response.match(/[^.!?]+[.!?]+/g) || [response];
             if (sentences.length > 1) {
                 return sentences[0];
@@ -308,8 +308,8 @@
         };
 
         const sendMessage = async (message, displayMessage = true) => {
-            if (isPendingResponse) return; // Prevent sending if there's a pending response
-            isPendingResponse = true; // Set flag to indicate a response is pending
+            if (isPendingResponse) return;
+            isPendingResponse = true;
 
             const chatContainer = document.getElementById('chat-container');
             const downloadChatContainer = document.getElementById('download-chat');
@@ -347,7 +347,7 @@
             } catch (error) {
                 console.error('Error sending message:', error);
             } finally {
-                isPendingResponse = false; // Reset flag after response is handled
+                isPendingResponse = false;
             }
         };
 
@@ -392,71 +392,6 @@
             }
         });
 
-        document.getElementById('carolToggle').addEventListener('change', function() {
-            if (this.checked) {
-                document.getElementById('userToggle').checked = false;
-            } else {
-                document.getElementById('userToggle').checked = true;
-            }
-        });
-
-        document.getElementById('download-button').addEventListener('click', function() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-
-            const suggestion = document.getElementById('download-suggestion').innerText;
-            const chatMessages = Array.from(document.getElementById('download-chat').children);
-            const footer = 'Improvised @ The Radical Agreement Project';
-            const url = 'https://www.radicalagreement.com/';
-
-            // Set up the document
-            doc.setFont("Courier");
-            doc.setFontSize(30);
-            doc.setFont(undefined, "bold");
-            doc.text(`THE IMPROVISED ${suggestion.toUpperCase()} SCENE`, doc.internal.pageSize.getWidth() / 2, 20, {align: "center"});
-            doc.setLineWidth(1);
-            doc.line(25, 22, doc.internal.pageSize.getWidth() - 25, 22); // Underline Title
-            doc.setFontSize(16);
-            doc.setFont(undefined, "normal");
-
-            let yOffset = 40;
-            const margin = 25;
-
-            chatMessages.forEach((message, index) => {
-                const speaker = message.classList.contains('user-message') ? 'USER' : 'QUESTIONING CAROL';
-                const cleanedText = removeImprovWord(text);
-                const lines = doc.splitTextToSize(cleanedText, doc.internal.pageSize.getWidth() - 2 * margin);
-
-                //Center, Bold speaker name
-                doc.setFont("Courier", "bold");
-                doc.text(speaker, doc.internal.pageSize.getWidth() / 2, yOffset, {align: "center"});
-                yOffset += 10;
-                doc.setFont("Courier", "normal");
-
-                //adding lines
-                Lines.forEach((line) => {
-                    doc.text(line, margin, yOffset);
-                    yOffset += 10
-                });
-                yOffset += 5
-
-                // Check for page overflow
-                if (yOffset > doc.internal.pageSize.getHeight() - 20) {
-                    doc.addPage();
-                    yOffset = 20;
-                }
-            });
-
-            // Add footer
-            doc.setTextColor(0, 0, 255);
-            doc.textWithLink(footer, 10, doc.internal.pageSize.getHeight() - 10, {url: url});
-            doc.setTextColor(0, 0, 0);
-
-            const fileName = `${suggestion.replace(/\s+/g, '_')}_scene.pdf`;
-            doc.save(fileName);
-        });
-    </script>
-</body>
-</html>
+        document.getElementById
 
 
