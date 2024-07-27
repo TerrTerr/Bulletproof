@@ -245,14 +245,12 @@
             <button id="download-button">Download My Scene</button>
         </div>
     </div>
-
     <div id="download-container">
         <p>An improv scene with Questioning Carol</p>
         <p id="download-suggestion"></p>
         <div id="download-chat"></div>
         <p>Improvised @ <a href="https://www.radicalagreement.com/">The Radical Agreement Project</a></p>
     </div>
-
     <script>
         let suggestions = [];
         let initialPrompt;
@@ -267,7 +265,6 @@
                 })
                 .catch(error => console.error('Error fetching suggestions:', error));
         });
-
         document.getElementById('suggestionButton').addEventListener('click', function() {
             if (suggestions.length > 0) {
                 const randomIndex = Math.floor(Math.random() * suggestions.length);
@@ -276,7 +273,6 @@
                 document.getElementById('download-suggestion').innerText = suggestion.charAt(0).toUpperCase() + suggestion.slice(1);
                 initialPrompt = `You are an improv character in a comedy scene. Your role is to ask questions as often as every other line or more. Follow all other improv best practices by playing grounded, being pithy, listening and responding/reacting, helping establish where the scene is happening and between who. Mix some statements in between your questions. The best questions are open-ended. Begin the conversation with an open-ended question. Respond only with your side of the conversation, provide only one line of dialogue at a time, and limit your response to one sentence. Here is the suggestion: ${suggestion}`;
                 startTime = new Date();
-
                 if (document.getElementById('carolToggle').checked) {
                     sendMessage(suggestion, false);
                 }
@@ -284,7 +280,6 @@
                 console.log('No suggestions available');
             }
         });
-
         document.getElementById('newSceneButton').addEventListener('click', function() {
             document.getElementById('chat-container').innerHTML = '';
             document.getElementById('download-chat').innerHTML = '';
@@ -302,7 +297,6 @@
             }
             return response;
         };
-
         const removeImprovWord = (text) => {
             return text.replace(/\bImprov\b/g, '');
         };
@@ -318,31 +312,25 @@
                 userMessageElement.className = 'message user-message';
                 userMessageElement.innerText = message;
                 chatContainer.appendChild(userMessageElement);
-
                 const userMessageElementClone = userMessageElement.cloneNode(true);
                 downloadChatContainer.appendChild(userMessageElementClone);
             }
-
             try {
                 const response = await fetch('https://improvaise.glitch.me/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ message: initialPrompt + "\nUser: " + message })
                 });
-
                 const data = await response.json();
                 let assistantMessage = data.choices[0].message.content.replace('Assistant: ', '');
                 assistantMessage = trimResponse(assistantMessage);
                 assistantMessage = removeImprovWord(assistantMessage);
-
                 const assistantMessageElement = document.createElement('div');
                 assistantMessageElement.className = 'message assistant-message';
                 assistantMessageElement.innerText = assistantMessage;
                 chatContainer.appendChild(assistantMessageElement);
-
                 const assistantMessageElementClone = assistantMessageElement.cloneNode(true);
                 downloadChatContainer.appendChild(assistantMessageElementClone);
-
                 chatContainer.scrollTop = chatContainer.scrollHeight;
             } catch (error) {
                 console.error('Error sending message:', error);
@@ -357,33 +345,26 @@
             document.getElementById('user-input').value = '';
             sendMessage(userMessage);
         });
-
         document.getElementById('button-button').addEventListener('click', () => {
             const userMessage = document.getElementById('user-input').value;
             if (!userMessage) return;
             document.getElementById('user-input').value = '';
-
             const chatContainer = document.getElementById('chat-container');
             const downloadChatContainer = document.getElementById('download-chat');
-
             const userMessageElement = document.createElement('div');
             userMessageElement.className = 'message user-message';
             userMessageElement.innerText = userMessage;
             chatContainer.appendChild(userMessageElement);
-
             const userMessageElementClone = userMessageElement.cloneNode(true);
             downloadChatContainer.appendChild(userMessageElementClone);
-
             chatContainer.scrollTop = chatContainer.scrollHeight;
         });
-
         document.getElementById('user-input').addEventListener('keypress', function(event) {
             if (event.key === 'Enter') {
                 event.preventDefault();
                 document.getElementById('send-button').click();
             }
         });
-
         document.getElementById('userToggle').addEventListener('change', function() {
             if (this.checked) {
                 document.getElementById('carolToggle').checked = false;
@@ -392,6 +373,70 @@
             }
         });
 
-        document.getElementById
+        document.getElementById('carolToggle').addEventListener('change', function() {
+            if (this.checked) {
+                document.getElementById('userToggle').checked = false;
+            } else {
+                document.getElementById('userToggle').checked = true;
+            }
+        });
 
+        document.getElementById('download-button').addEventListener('click', function() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const suggestion = document.getElementById('download-suggestion').innerText;
+            const chatMessages = Array.from(document.getElementById('download-chat').children);
+            const footer = 'Improvised @ The Radical Agreement Project';
+            const url = 'https://www.radicalagreement.com/';
+
+            // Set up the document
+            doc.setFont("Courier");
+            doc.setFontSize(30);
+            doc.setFont(undefined, "bold");
+            doc.text(`THE IMPROVISED ${suggestion.toUpperCase()} SCENE`, doc.internal.pageSize.getWidth() / 2, 20, {align: "center"});
+            doc.setLineWidth(1);
+            doc.line(25, 22, doc.internal.pageSize.getWidth() - 25, 22); // Underline Title
+            doc.setFontSize(16);
+            doc.setFont(undefined, "normal");
+
+            let yOffset = 40;
+            const margin = 25;
+
+            chatMessages.forEach((message, index) => {
+                const speaker = message.classList.contains('user-message') ? 'USER' : 'QUESTIONING CAROL';
+                const cleanedText = removeImprovWord(text);
+                const lines = doc.splitTextToSize(cleanedText, doc.internal.pageSize.getWidth() - 2 * margin);
+
+                //Center, Bold speaker name
+                doc.setFont("Courier", "bold");
+                doc.text(speaker, doc.internal.pageSize.getWidth() / 2, yOffset, {align: "center"});
+                yOffset += 10;
+                doc.setFont("Courier", "normal");
+
+                //adding lines
+                Lines.forEach((line) => {
+                    doc.text(line, margin, yOffset);
+                    yOffset += 10
+                });
+                yOffset += 5
+
+                // Check for page overflow
+                if (yOffset > doc.internal.pageSize.getHeight() - 20) {
+                    doc.addPage();
+                    yOffset = 20;
+                }
+            });
+
+            // Add footer
+            doc.setTextColor(0, 0, 255);
+            doc.textWithLink(footer, 10, doc.internal.pageSize.getHeight() - 10, {url: url});
+            doc.setTextColor(0, 0, 0);
+
+            const fileName = `${suggestion.replace(/\s+/g, '_')}_scene.pdf`;
+            doc.save(fileName);
+        });
+    </script>
+</body>
+</html>
 
