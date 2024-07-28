@@ -389,21 +389,24 @@
 
                 const titleLines = doc.splitTextToSize(header, pageWidth - 2 * margin);
                 const titleLineHeight = 10; // Adjust the height between lines if needed
+                const titleStartY = 20; // Starting position for the title
                 titleLines.forEach((line, index) => {
-                    doc.text(line, pageWidth / 2, 20 + index * titleLineHeight, { align: "center" });
-});
-                const titleEndY = 20 + titleLines.length * titleLineHeight;
-                const underlineY = titleEndY + 5; // Adjust the distance between the title and underline
+                    doc.text(line, pageWidth / 2, titleStartY + index * titleLineHeight, { align: "center" });
+                });
+                const titleEndY = titleStartY + (titleLines.length - 1) * titleLineHeight; // Position of the last line
+                const underlineY = titleEndY + 1.5; // Small gap below the last line of the title
                 doc.setLineWidth(1);
-                doc.line(margin, underlineY, pageWidth - margin, underlineY);
+                doc.line(margin, underlineY, pageWidth - margin, underlineY); // Underline Title
 
                 doc.setFontSize(16);
 
-                let yOffset = titleEndY + 40;
+                let yOffset = underlineY + 25; // Position text below the underline
 
-                const addFooter = (doc, pageWidth, pageHeight) => {
+                const footerY = underlineY + 5.5; // Positioning footer just below the underline
+
+                const addFooter = (doc, pageWidth, footerY) => {
                     doc.setTextColor(0, 0, 255);
-                    doc.textWithLink("Created @ The Radical Agreement Project", margin, pageHeight - 10, { url: "https://www.radicalagreement.com/" });
+                    doc.textWithLink("Created @ The Radical Agreement Project", margin, footerY, { url: "https://www.radicalagreement.com/" });
                     doc.setTextColor(0, 0, 0);
                 };
 
@@ -441,13 +444,13 @@
 
                     // Check for page overflow
                     if (yOffset > pageHeight - 40) {
-                        addFooter(doc, pageWidth, pageHeight);
+                        addFooter(doc, pageWidth, pageHeight - 10);
                         doc.addPage();
                         yOffset = 20;
                     }
                 });
 
-                addFooter(doc, pageWidth, pageHeight);
+                addFooter(doc, pageWidth, footerY);
 
                 const fileName = `The_Improvised_${suggestion.replace(/\s+/g, '_')}_Scene.pdf`;
                 doc.save(fileName);
@@ -456,3 +459,4 @@
     </script>
 </body>
 </html>
+
