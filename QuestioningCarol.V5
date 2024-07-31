@@ -35,12 +35,12 @@
             align-items: center;
             margin-top: 20px;
         }
-        .content .buttons-container {
+        .buttons-container {
             display: flex;
             justify-content: center;
             margin-top: 10px;
         }
-        .content .buttons-container button {
+        .buttons-container button {
             font-size: 18px;
             padding: 15px 30px;
             border: none;
@@ -213,7 +213,7 @@
                     const randomIndex = Math.floor(Math.random() * suggestions.length);
                     const suggestion = suggestions[randomIndex];
                     document.getElementById('suggestion').innerText = suggestion.charAt(0).toUpperCase() + suggestion.slice(1);
-                    initialPrompt = `Act As a comedic improviser playing a character in a comedy scene. The User will Act As the other character in the scene. Be sure to always Act As your character and never as the User's character. Have a tendency to ask questions as often as every other line. Follow all other improv best practices by playing grounded, being pithy, listening and responding/reacting to the User's contributions, help establish where the scene is happening and between who. Mix some statements in between your questions. The best questions are open-ended. Begin the conversation with an open-ended question. Here is the suggestion: ${suggestion}`;
+                    initialPrompt = `You are an improv character in a comedy scene. Your role is to ask questions as often as every other line or more. Follow all other improv best practices by playing grounded, being pithy, listening and responding/reacting, helping establish where the scene is happening and between who. Mix some statements in between your questions. The best questions are open-ended. Begin the conversation with an open-ended question. Respond only with your side of the conversation, provide only one line of dialogue at a time, and limit your response to one sentence. Here is the suggestion: ${suggestion}`;
                     startTime = new Date();
                     if (document.getElementById('carolToggle').checked) {
                         sendMessage(suggestion, false);
@@ -416,3 +416,4 @@
     </script>
 </body>
 </html>
+
