@@ -175,7 +175,7 @@
                     <input type="checkbox" id="userToggle" checked>
                     <label for="userToggle">You Initiate</label>
                     <input type="checkbox" id="carolToggle">
-                    <label for="carolToggle">Questioning Carol Initiates</label>
+                    <label for="carolToggle">Argumentative Arnold Initiates</label>
                 </div>
             </div>
             <div class="buttons-container">
@@ -374,7 +374,7 @@
                 let pageCount = 1;
 
                 chatMessages.forEach((message) => {
-                    const speaker = message.classList.contains('user-message') ? 'USER' : 'QUESTIONING CAROL';
+                    const speaker = message.classList.contains('user-message') ? 'USER' : 'ARGUMENTATIVE ARNOLD';
                     let cleanedText = message.innerText;
 
                     // Convert stage directions to italicized parentheses
