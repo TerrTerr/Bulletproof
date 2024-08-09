@@ -14,7 +14,7 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            padding-top: 20px; /* Added margin above the container */
+            padding-top: 20px;
         }
         .container {
             background-color: #fff;
@@ -279,6 +279,9 @@
                 } finally {
                     isPendingResponse = false;
                 }
+
+                // Refocus on the input box after sending the message
+                document.getElementById('user-input').focus();
             };
 
             document.getElementById('send-button').addEventListener('click', () => {
@@ -377,8 +380,8 @@
                     const speaker = message.classList.contains('user-message') ? 'USER' : 'ARGUMENTATIVE ARNOLD';
                     let cleanedText = message.innerText;
 
-                    // Convert stage directions to italicized parentheses
-                    cleanedText = cleanedText.replace(/\*(.*?)\*/g, (_, p1) => `(${p1})`);
+                    // Preserve parentheses and remove special handling of text in asterisks
+                    cleanedText = cleanedText.replace(/\*(.*?)\*/g, (_, p1) => p1);
 
                     const lines = doc.splitTextToSize(cleanedText, pageWidth - 2 * margin);
 
@@ -390,17 +393,7 @@
 
                     // Adding lines
                     lines.forEach((line) => {
-                        // Italicize stage directions within parentheses
-                        const parts = line.split(/(\(.*?\))/g);
-                        parts.forEach(part => {
-                            if (part.startsWith('(') && part.endsWith(')')) {
-                                doc.setFont(undefined, "italic");
-                                doc.text(part, margin, yOffset);
-                                doc.setFont(undefined, "normal");
-                            } else {
-                                doc.text(part, margin, yOffset);
-                            }
-                        });
+                        doc.text(line, margin, yOffset);
                         yOffset += 10;
                     });
                     yOffset += 5;
