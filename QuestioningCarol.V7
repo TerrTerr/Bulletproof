@@ -391,19 +391,9 @@
                     yOffset += 10;
                     doc.setFont("Courier", "normal");
 
-                    // Adding lines
+                    // Adding lines, treating all comments the same
                     lines.forEach((line) => {
-                        // Italicize stage directions within parentheses
-                        const parts = line.split(/(\(.*?\))/g);
-                        parts.forEach(part => {
-                            if (part.startsWith('(') && part.endsWith(')')) {
-                                doc.setFont(undefined, "italic");
-                                doc.text(part, margin, yOffset);
-                                doc.setFont(undefined, "normal");
-                            } else {
-                                doc.text(part, margin, yOffset);
-                            }
-                        });
+                        doc.text(line, margin, yOffset);
                         yOffset += 10;
                     });
                     yOffset += 5;
