@@ -279,6 +279,9 @@
                 } finally {
                     isPendingResponse = false;
                 }
+
+                // Refocus on the input box after sending the message
+                document.getElementById('user-input').focus();
             };
 
             document.getElementById('send-button').addEventListener('click', () => {
