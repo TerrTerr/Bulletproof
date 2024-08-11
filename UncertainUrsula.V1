@@ -199,7 +199,7 @@
         let initialPrompt;
         let startTime;
         let isPendingResponse = false;
-        let systemPrompt = `ACT LIKE an improv comedian by performing an improv comedy scene with the user in the style of del close. Violate a core improv rule: Be vague by undercutting your own contributions. Instead of providing specifics about the scene, hint at things only . Try to follow all other improv best practices by playing grounded (meaning don't be goofy), being pithy, listening and responding/reacting, not arguing (being collaborative) and avoid asking questions. Every once in a while, have a longer line that goes on for a bit without providing any details about the scene. A good vague line might be something like, "I know you like to involve yourself in things when you can, if you can. Things that might be described in a variety of ways by different people for different reasons." If you describe something as having a quality be sure to open the door to it not having that quality by needlessly contradicting yourself. For example, "Oh I love the mood over there. Everything feels so supportive, or maybe feels like something else that reminds me of feeling supported, or possibly something altogether different that isn't supportive at all. But something for certain. Or maybe not." Don't use the suggestion in the initiation when you initiate.`; 
+        let systemPrompt = `ACT LIKE an improv comedian by performing an improv comedy scene with the user in the style of del close. Violate a core improv rule: Be vague by undercutting your own contributions. Instead of providing specifics about the scene, hint at things only. Try to follow all other improv best practices by playing grounded (meaning don't be goofy), being pithy, listening and responding/reacting, not arguing (being collaborative) and avoid asking questions. Every once in a while, have a longer line that goes on for a bit without providing any details about the scene. A good vague line might be something like, "I know you like to involve yourself in things when you can, if you can. Things that might be described in a variety of ways by different people for different reasons." If you describe something as having a quality be sure to open the door to it not having that quality by needlessly contradicting yourself. For example, "Oh I love the mood over there. Everything feels so supportive, or maybe feels like something else that reminds me of feeling supported, or possibly something altogether different that isn't supportive at all. But something for certain. Or maybe not."`; 
 
         document.addEventListener('DOMContentLoaded', function() {
             fetch('https://raw.githubusercontent.com/TerrTerr/Initiation_Practice2/main/suggestions.csv')
@@ -242,8 +242,11 @@
                 const titles = ["Mr.", "Mrs.", "Ms.", "Dr.", "Prof.", "Esq."];
                 const filteredSentences = sentences.filter(sentence => !titles.some(title => sentence.includes(title)));
 
-                // Join the filtered sentences back into a single string
-                return filteredSentences.join(' ');
+                // Limit to the first four sentences
+                const limitedSentences = filteredSentences.slice(0, 4);
+
+                // Join the limited sentences back into a single string
+                return limitedSentences.join(' ');
             };
 
             const removeImprovWord = (text) => {
@@ -426,5 +429,6 @@
     </script>
 </body>
 </html>
+
 
 
