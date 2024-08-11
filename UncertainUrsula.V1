@@ -199,6 +199,7 @@
         let initialPrompt;
         let startTime;
         let isPendingResponse = false;
+        let systemPrompt = `ACT LIKE an improv comedian by performing an improv comedy scene with the user in the style of del close. Violate a core improv rule: Be vague by undercutting your own contributions. Instead of providing specifics about the scene, hint at things only . Try to follow all other improv best practices by playing grounded (meaning don't be goofy), being pithy, listening and responding/reacting, not arguing (being collaborative) and avoid asking questions. Every once in a while, have a longer line that goes on for a bit without providing any details about the scene. A good vague line might be something like, "I know you like to involve yourself in things when you can, if you can. Things that might be described in a variety of ways by different people for different reasons." If you describe something as having a quality be sure to open the door to it not having that quality by needlessly contradicting yourself. For example, "Oh I love the mood over there. Everything feels so supportive, or maybe feels like something else that reminds me of feeling supported, or possibly something altogether different that isn't supportive at all. But something for certain. Or maybe not." Don't use the suggestion in the initiation when you initiate.`; 
 
         document.addEventListener('DOMContentLoaded', function() {
             fetch('https://raw.githubusercontent.com/TerrTerr/Initiation_Practice2/main/suggestions.csv')
@@ -213,7 +214,7 @@
                     const randomIndex = Math.floor(Math.random() * suggestions.length);
                     const suggestion = suggestions[randomIndex];
                     document.getElementById('suggestion').innerText = suggestion.charAt(0).toUpperCase() + suggestion.slice(1);
-                    initialPrompt = `ACT LIKE an improv comedian playing a character in a comedy scene. Your role is to ask questions as often as every other line or more. Follow all other improv best practices by playing grounded, being pithy, listening and responding/reacting, helping establish where the scene is happening and between who. Mix some statements in between your questions. The best questions are open-ended. Begin the conversation with an open-ended question. Respond only with your side of the conversation, provide only one line of dialogue at a time, and limit your response to one sentence. Here is the suggestion: ${suggestion}`;
+                    initialPrompt = `${systemPrompt} Here is the suggestion: ${suggestion}`;
                     startTime = new Date();
                     if (document.getElementById('carolToggle').checked) {
                         sendMessage("", false);
@@ -257,10 +258,10 @@
                 }
 
                 let scene = Array.from(document.getElementById('chat-container').children).map(div => div.innerText).join('\n');
-                let nextPrompt = `ACT LIKE an improv comedian playing a character in a comedy scene who asks a lot of questions. so far the scene has flowed in the below manner. Please provide the next line in this scene from the perspective of the character you have been playing. If possible, please have that line be an open ended question that understands all the previously established details of the scene, but wants an additional piece of information. Here is the scene so far:\n${scene}`;
+                let nextPrompt = `${systemPrompt} Respond based on the following scene so far, remember if the USER refers to you with a name, that is your name, not the USER's, provide te next line of dialogue:\n${scene}`;
 
                 try {
-                    const response = await fetch('https://improvaise-3point5-turbo.glitch.me/chat', { // Updated URL
+                    const response = await fetch('https://improvaise-3point5-turbo.glitch.me/chat', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ message: nextPrompt })
@@ -420,3 +421,4 @@
     </script>
 </body>
 </html>
+
