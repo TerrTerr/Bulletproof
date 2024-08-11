@@ -231,14 +231,19 @@
             });
 
             const trimResponse = (response) => {
+                // Remove line breaks and unnecessary labels
                 response = response.replace(/\n/g, ' ');
                 response = response.replace(/[^ ]+:/g, '');
+
+                // Split the response into sentences
                 const sentences = response.match(/[^.!?]+[.!?]+/g) || [response];
+
+                // Filter out sentences containing titles like "Mr.," "Mrs.," etc.
                 const titles = ["Mr.", "Mrs.", "Ms.", "Dr.", "Prof.", "Esq."];
-                if (sentences.length > 1) {
-                    return sentences.filter((sentence) => !titles.some((title) => sentence.includes(title)))[0];
-                }
-                return response;
+                const filteredSentences = sentences.filter(sentence => !titles.some(title => sentence.includes(title)));
+
+                // Join the filtered sentences back into a single string
+                return filteredSentences.join(' ');
             };
 
             const removeImprovWord = (text) => {
@@ -258,7 +263,7 @@
                 }
 
                 let scene = Array.from(document.getElementById('chat-container').children).map(div => div.innerText).join('\n');
-                let nextPrompt = `${systemPrompt} Respond based on the following scene so far, remember if the USER refers to you with a name, that is your name, not the USER's, provide te next line of dialogue:\n${scene}`;
+                let nextPrompt = `${systemPrompt} Respond based on the following scene so far, remember if the USER refers to you with a name, that is your name, not the USER's, provide the next line of dialogue:\n${scene}`;
 
                 try {
                     const response = await fetch('https://improvaise-3point5-turbo.glitch.me/chat', {
@@ -421,4 +426,5 @@
     </script>
 </body>
 </html>
+
 
