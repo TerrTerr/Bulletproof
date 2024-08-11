@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Improv Comedy Scene</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap');
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding-top: 20px; /* Added margin above the container */
+        }
+        .container {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 800px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .content {
+            display: flex;
+            width: 100%;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .buttons-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        .buttons-container button {
+            font-size: 18px;
+            padding: 15px 30px;
+            border: none;
+            color: white;
+            cursor: pointer;
+            margin: 10px;
+            border-radius: 5px;
+        }
+        #suggestionButton {
+            background-color: green;
+            padding: 15px 30px;
+        }
+        #suggestion {
+            font-size: 24px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        #chat-container {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            height: 400px;
+            overflow-y: auto;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #fafafa;
+            width: 100%;
+        }
+        .message {
+            border-radius: 20px;
+            padding: 10px 15px;
+            margin: 5px 0;
+            max-width: 75%;
+            word-wrap: break-word;
+            font-size: 18px;
+        }
+        .user-message {
+            background-color: #007bff;
+            color: white;
+            align-self: flex-end;
+        }
+        .assistant-message {
+            background-color: #00ffff;
+            color: black;
+            align-self: flex-start;
+        }
+        #user-input-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 10px;
+            width: 100%;
+        }
+        #user-input {
+            width: 100%;
+            padding: 10px;
+            font-size: 18px;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            margin-bottom: 10px;
+        }
+        #buttons-container {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+        #send-button, #button-button, #wipeButton {
+            padding: 10px;
+            font-size: 18px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        #send-button {
+            background-color: #007bff;
+            color: white;
+        }
+        #button-button {
+            background-color: green;
+            color: white;
+        }
+        #wipeButton {
+            background-color: red;
+            color: white;
+        }
+        .toggle-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .toggle-buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .toggle-buttons label {
+            cursor: pointer;
+            padding: 10px 20px;
+            border: 1px solid #ccc;
+            margin-bottom: 5px;
+            border-radius: 5px;
+            font-size: 18px;
+        }
+        .toggle-buttons input[type="checkbox"] {
+            display: none;
+        }
+        .toggle-buttons input[type="checkbox"]:checked + label {
+            background-color: blue;
+            color: white;
+        }
+        #download-button {
+            background-color: #3b5998;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <div class="container" id="scene-container">
+        <div class="content">
+            <div class="toggle-container">
+                <div class="toggle-buttons">
+                    <input type="checkbox" id="userToggle" checked>
+                    <label for="userToggle" title="Choose this to initiate the scene yourself.">You Initiate</label>
+                    <input type="checkbox" id="carolToggle">
+                    <label for="carolToggle" title="Let Questioning Carol initiate the scene.">Questioning Carol Initiates</label>
+                </div>
+            </div>
+            <div class="buttons-container">
+                <button id="suggestionButton" title="Click to get a random suggestion.">Suggestion</button>
+            </div>
+        </div>
+        <p id="suggestion"></p>
+        <div id="chat-container"></div>
+        <div id="user-input-container">
+            <input type="text" id="user-input" placeholder="Type your dialogue here..." title="Type your dialogue here and then click 'Send'.">
+            <div id="buttons-container">
+                <button id="send-button" title="Send your dialogue to continue the scene.">Send</button>
+                <button id="button-button" title="This button adds your text without sending it.">Button</button>
+                <button id="wipeButton" title="Clear the chat and start over.">Wipe</button>
+            </div>
+        </div>
+    </div>
+    <button id="download-button" title="Download the current scene as a PDF.">Download My Scene</button>
+    <script>
+        let suggestions = [];
+        let initialPrompt;
+        let startTime;
+        let isPendingResponse = false;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('https://raw.githubusercontent.com/TerrTerr/Initiation_Practice2/main/suggestions.csv')
+                .then(response => response.text())
+                .then(data => {
+                    suggestions = data.split('\n').slice(1).map(line => line.trim());
+                })
+                .catch(error => console.error('Error fetching suggestions:', error));
+
+            document.getElementById('suggestionButton').addEventListener('click', function() {
+                if (suggestions.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * suggestions.length);
+                    const suggestion = suggestions[randomIndex];
+                    document.getElementById('suggestion').innerText = suggestion.charAt(0).toUpperCase() + suggestion.slice(1);
+                    initialPrompt = `ACT LIKE an improv comedian playing a character in a comedy scene. Your role is to ask questions as often as every other line or more. Follow all other improv best practices by playing grounded, being pithy, listening and responding/reacting, helping establish where the scene is happening and between who. Mix some statements in between your questions. The best questions are open-ended. Begin the conversation with an open-ended question. Respond only with your side of the conversation, provide only one line of dialogue at a time, and limit your response to one sentence. Here is the suggestion: ${suggestion}`;
+                    startTime = new Date();
+                    if (document.getElementById('carolToggle').checked) {
+                        sendMessage("", false);
+                    }
+                } else {
+                    console.log('No suggestions available');
+                }
+            });
+
+            document.getElementById('wipeButton').addEventListener('click', function() {
+                document.getElementById('chat-container').innerHTML = '';
+                document.getElementById('suggestion').innerText = '';
+                document.getElementById('user-input').value = '';
+            });
+
+            const trimResponse = (response) => {
+                response = response.replace(/\n/g, ' ');
+                response = response.replace(/[^ ]+:/g, '');
+                const sentences = response.match(/[^.!?]+[.!?]+/g) || [response];
+                const titles = ["Mr.", "Mrs.", "Ms.", "Dr.", "Prof.", "Esq."];
+                if (sentences.length > 1) {
+                    return sentences.filter((sentence) => !titles.some((title) => sentence.includes(title)))[0];
+                }
+                return response;
+            };
+
+            const removeImprovWord = (text) => {
+                return text.replace(/\bImprov\b/g, '');
+            };
+
+            const sendMessage = async (message, displayMessage = true) => {
+                if (isPendingResponse) return;
+                isPendingResponse = true;
+
+                const chatContainer = document.getElementById('chat-container');
+                if (displayMessage) {
+                    const userMessageElement = document.createElement('div');
+                    userMessageElement.className = 'message user-message';
+                    userMessageElement.innerText = message;
+                    chatContainer.appendChild(userMessageElement);
+                }
+
+                let scene = Array.from(document.getElementById('chat-container').children).map(div => div.innerText).join('\n');
+                let nextPrompt = `ACT LIKE an improv comedian playing a character in a comedy scene who asks a lot of questions. so far the scene has flowed in the below manner. Please provide the next line in this scene from the perspective of the character you have been playing. If possible, please have that line be an open ended question that understands all the previously established details of the scene, but wants an additional piece of information. Here is the scene so far:\n${scene}`;
+
+                try {
+                    const response = await fetch('https://improvaise-3point5-turbo.glitch.me/chat', { // Updated URL
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ message: nextPrompt })
+                    });
+                    const data = await response.json();
+                    let assistantMessage = data.choices[0].message.content.replace('Assistant: ', '');
+                    assistantMessage = trimResponse(assistantMessage);
+                    assistantMessage = removeImprovWord(assistantMessage);
+                    const assistantMessageElement = document.createElement('div');
+                    assistantMessageElement.className = 'message assistant-message';
+                    assistantMessageElement.innerText = assistantMessage;
+                    chatContainer.appendChild(assistantMessageElement);
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                } catch (error) {
+                    console.error('Error sending message:', error);
+                } finally {
+                    isPendingResponse = false;
+                }
+
+                // Refocus on the input box after sending the message
+                document.getElementById('user-input').focus();
+            };
+
+            document.getElementById('send-button').addEventListener('click', () => {
+                const userMessage = document.getElementById('user-input').value;
+                if (!userMessage) return;
+                document.getElementById('user-input').value = '';
+                sendMessage(userMessage);
+            });
+
+            document.getElementById('button-button').addEventListener('click', () => {
+                const userMessage = document.getElementById('user-input').value;
+                if (!userMessage) return;
+                document.getElementById('user-input').value = '';
+                const chatContainer = document.getElementById('chat-container');
+                const userMessageElement = document.createElement('div');
+                userMessageElement.className = 'message user-message';
+                userMessageElement.innerText = userMessage;
+                chatContainer.appendChild(userMessageElement);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            });
+
+            document.getElementById('user-input').addEventListener('keypress', function(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    document.getElementById('send-button').click();
+                }
+            });
+
+            document.getElementById('userToggle').addEventListener('change', function() {
+                if (this.checked) {
+                    document.getElementById('carolToggle').checked = false;
+                } else {
+                    document.getElementById('carolToggle').checked = true;
+                }
+            });
+
+            document.getElementById('carolToggle').addEventListener('change', function() {
+                if (this.checked) {
+                    document.getElementById('userToggle').checked = false;
+                } else {
+                    document.getElementById('userToggle').checked = true;
+                }
+            });
+
+            document.getElementById('download-button').addEventListener('click', function() {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+
+                const suggestionElement = document.getElementById('suggestion');
+                const chatContainerElement = document.getElementById('chat-container');
+
+                if (!suggestionElement || !chatContainerElement) {
+                    console.error('Required elements not found in the DOM.');
+                    return;
+                }
+
+                const suggestion = suggestionElement.innerText;
+                const chatMessages = Array.from(chatContainerElement.children);
+                const header = `THE IMPROVISED ${suggestion.toUpperCase()} SCENE`;
+
+                // Set up the document
+                const margin = 25;
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const pageHeight = doc.internal.pageSize.getHeight();
+
+                doc.setFont("Courier");
+                doc.setFontSize(30);
+                doc.setFont(undefined, "bold");
+
+                const titleLines = doc.splitTextToSize(header, pageWidth - 2 * margin);
+                const titleLineHeight = 10; // Adjust the height between lines if needed
+                const titleStartY = 20; // Starting position for the title
+                titleLines.forEach((line, index) => {
+                    doc.text(line, pageWidth / 2, titleStartY + index * titleLineHeight, { align: "center" });
+                });
+                const titleEndY = titleStartY + (titleLines.length - 1) * titleLineHeight; // Position of the last line
+                const underlineY = titleEndY + 1.5; // Small gap below the last line of the title
+                doc.setLineWidth(1);
+                doc.line(margin, underlineY, pageWidth - margin, underlineY); // Underline Title
+
+                doc.setFontSize(16);
+
+                let yOffset = underlineY + 25; // Position text below the underline
+
+                const footerY = underlineY + 5; // Positioning footer just below the underline
+
+                const addFooter = (doc, pageWidth, footerY) => {
+                    doc.setTextColor(0, 0, 255);
+                    doc.textWithLink("Created @ The Radical Agreement Project", margin, footerY, { url: "https://www.radicalagreement.com/" });
+                    doc.setTextColor(0, 0, 0);
+                };
+
+                let pageCount = 1;
+
+                chatMessages.forEach((message) => {
+                    const speaker = message.classList.contains('user-message') ? 'USER' : 'QUESTIONING CAROL';
+                    let cleanedText = message.innerText;
+
+                    // Convert stage directions to italicized parentheses
+                    cleanedText = cleanedText.replace(/\*(.*?)\*/g, (_, p1) => `(${p1})`);
+
+                    const lines = doc.splitTextToSize(cleanedText, pageWidth - 2 * margin);
+
+                    // Set font size for the speaker name
+                    doc.setFont("Courier", "bold");
+                    doc.text(speaker, pageWidth / 2, yOffset, { align: "center" });
+                    yOffset += 10;
+                    doc.setFont("Courier", "normal");
+
+                    // Adding lines, treating all comments the same
+                    lines.forEach((line) => {
+                        doc.text(line, margin, yOffset);
+                        yOffset += 10;
+                    });
+                    yOffset += 5;
+
+                    // Check for page overflow
+                    if (yOffset > pageHeight - 40) {
+                        if (pageCount === 1) {
+                            addFooter(doc, pageWidth, footerY);
+                        }
+                        doc.addPage();
+                        yOffset = 20;
+                        pageCount++;
+                    }
+                });
+
+                if (pageCount === 1) {
+                    addFooter(doc, pageWidth, footerY);
+                }
+
+                const fileName = `The_Improvised_${suggestion.replace(/\s+/g, '_')}_Scene.pdf`;
+                doc.save(fileName);
+            });
+        });
+    </script>
+</body>
+</html>
