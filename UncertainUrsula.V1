@@ -199,6 +199,7 @@
         let initialPrompt;
         let startTime;
         let isPendingResponse = false;
+        let isFirstResponse = true;
         let systemPrompt = `ACT LIKE an improv comedian by performing an improv comedy scene with the user in the style of del close. Violate a core improv rule: Be vague by undercutting your own contributions. Instead of providing specifics about the scene, hint at things only. Try to follow all other improv best practices by playing grounded (meaning don't be goofy), being pithy, listening and responding/reacting, not arguing (being collaborative) and avoid asking questions. Every once in a while, have a longer line that goes on for a bit without providing any details about the scene. A good vague line might be something like, "I know you like to involve yourself in things when you can, if you can. Things that might be described in a variety of ways by different people for different reasons." If you describe something as having a quality be sure to open the door to it not having that quality by needlessly contradicting yourself. For example, "Oh I love the mood over there. Everything feels so supportive, or maybe feels like something else that reminds me of feeling supported, or possibly something altogether different that isn't supportive at all. But something for certain. Or maybe not."`; 
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -230,7 +231,7 @@
                 document.getElementById('user-input').value = '';
             });
 
-            const trimResponse = (response) => {
+            const trimResponse = (response, sentenceLimit) => {
                 // Remove line breaks and unnecessary labels
                 response = response.replace(/\n/g, ' ');
                 response = response.replace(/[^ ]+:/g, '');
@@ -242,8 +243,8 @@
                 const titles = ["Mr.", "Mrs.", "Ms.", "Dr.", "Prof.", "Esq."];
                 const filteredSentences = sentences.filter(sentence => !titles.some(title => sentence.includes(title)));
 
-                // Limit to the first four sentences
-                const limitedSentences = filteredSentences.slice(0, 4);
+                // Limit to the first 'sentenceLimit' sentences
+                const limitedSentences = filteredSentences.slice(0, sentenceLimit);
 
                 // Join the limited sentences back into a single string
                 return limitedSentences.join(' ');
@@ -265,6 +266,38 @@
                     chatContainer.appendChild(userMessageElement);
                 }
 
+                // Determine the response length
+                let sentenceLimit;
+                
+                if (isFirstResponse) {
+                    // Uncertain Ursula's first line is always 1 sentence
+                    sentenceLimit = 1;
+                    isFirstResponse = false;
+                } else {
+                    const randomValue = Math.random();
+                    if (randomValue < 0.10) {
+                        // 10% chance for no response
+                        const assistantMessageElement = document.createElement('div');
+                        assistantMessageElement.className = 'message assistant-message';
+                        assistantMessageElement.innerText = "(Ursula looks at you and shrugs)";
+                        chatContainer.appendChild(assistantMessageElement);
+                        isPendingResponse = false;
+                        return;
+                    } else if (randomValue < 0.15) {
+                        // 5% chance for 4 sentences
+                        sentenceLimit = 4;
+                    } else if (randomValue < 0.25) {
+                        // 10% chance for 3 sentences
+                        sentenceLimit = 3;
+                    } else if (randomValue < 0.40) {
+                        // 15% chance for 2 sentences
+                        sentenceLimit = 2;
+                    } else {
+                        // 60% chance for 1 sentence
+                        sentenceLimit = 1;
+                    }
+                }
+
                 let scene = Array.from(document.getElementById('chat-container').children).map(div => div.innerText).join('\n');
                 let nextPrompt = `${systemPrompt} Respond based on the following scene so far, remember if the USER refers to you with a name, that is your name, not the USER's, provide the next line of dialogue:\n${scene}`;
 
@@ -276,7 +309,7 @@
                     });
                     const data = await response.json();
                     let assistantMessage = data.choices[0].message.content.replace('Assistant: ', '');
-                    assistantMessage = trimResponse(assistantMessage);
+                    assistantMessage = trimResponse(assistantMessage, sentenceLimit);
                     assistantMessage = removeImprovWord(assistantMessage);
                     const assistantMessageElement = document.createElement('div');
                     assistantMessageElement.className = 'message assistant-message';
@@ -429,6 +462,3 @@
     </script>
 </body>
 </html>
-
-
-
