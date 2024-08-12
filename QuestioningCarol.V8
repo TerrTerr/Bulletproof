@@ -183,7 +183,7 @@
             </div>
         </div>
         <p id="suggestion"></p>
-        <p style="margin-top: -10px; text-align: center; font-size: 14px; color: blue;">
+        <p style="margin-top: -20px; text-align: center; font-size: 14px; color: blue;">
             Allow 30 seconds before first response from app.
         </p>
         <div id="chat-container"></div>
