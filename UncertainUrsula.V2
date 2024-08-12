@@ -254,6 +254,10 @@
                 return text.replace(/\bImprov\b/g, '');
             };
 
+            const removeUrsula = (text) => {
+                return text.replace(/\s*,?\s*Ursula\b/g, '').replace(/\bUrsula\b\s*,?\s*/g, '');
+            };
+
             const sendMessage = async (message, displayMessage = true) => {
                 if (isPendingResponse) return;
                 isPendingResponse = true;
@@ -311,6 +315,7 @@
                     let assistantMessage = data.choices[0].message.content.replace('Assistant: ', '');
                     assistantMessage = trimResponse(assistantMessage, sentenceLimit);
                     assistantMessage = removeImprovWord(assistantMessage);
+                    assistantMessage = removeUrsula(assistantMessage); // Remove "Ursula" from the response
                     const assistantMessageElement = document.createElement('div');
                     assistantMessageElement.className = 'message assistant-message';
                     assistantMessageElement.innerText = assistantMessage;
