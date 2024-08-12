@@ -175,7 +175,7 @@
                     <input type="checkbox" id="userToggle" checked>
                     <label for="userToggle" title="Choose this to initiate the scene yourself.">You Initiate</label>
                     <input type="checkbox" id="carolToggle">
-                    <label for="carolToggle" title="Let Questioning Carol initiate the scene.">Questioning Carol Initiates</label>
+                    <label for="carolToggle" title="Let Uncertain Ursula initiate the scene.">Uncertain Ursula Initiates</label>
                 </div>
             </div>
             <div class="buttons-container">
@@ -424,7 +424,7 @@
                 let pageCount = 1;
 
                 chatMessages.forEach((message) => {
-                    const speaker = message.classList.contains('user-message') ? 'USER' : 'QUESTIONING CAROL';
+                    const speaker = message.classList.contains('user-message') ? 'USER' : 'UNCERTAIN URSULA';
                     let cleanedText = message.innerText;
 
                     // Convert stage directions to italicized parentheses
