@@ -240,10 +240,15 @@
                 response = response.replace(/[^ ]+:/g, '');
                 const sentences = response.match(/[^.!?]+[.!?]+/g) || [response];
                 const titles = ["Mr.", "Mrs.", "Ms.", "Dr.", "Prof.", "Esq."];
-                if (sentences.length > 1) {
-                    return sentences.filter((sentence) => !titles.some((title) => sentence.includes(title)))[0];
-                }
-                return response;
+
+                // Filter out sentences with titles and then prioritize question marks
+                const filteredSentences = sentences.filter((sentence) => !titles.some((title) => sentence.includes(title)));
+
+                // Try to find a sentence with a question mark
+                const questionSentence = filteredSentences.find(sentence => sentence.trim().endsWith('?'));
+
+                // If no question sentence is found, return the first available sentence
+                return questionSentence || filteredSentences[0];
             };
 
             const removeImprovWord = (text) => {
@@ -447,4 +452,3 @@
     </script>
 </body>
 </html>
-
