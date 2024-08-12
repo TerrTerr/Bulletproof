@@ -189,7 +189,7 @@
         <div id="chat-container"></div>
         <div id="user-input-container">
             <input type="text" id="user-input" placeholder="Type your dialogue here..." title="Type your dialogue here and then click 'Send'.">
-            <p style="margin-bottom: 10px; text-align: center; font-size: 14px; color: blue;">
+            <p style="margin-bottom: 3px; text-align: center; font-size: 14px; color: blue;">
                 Put actions / stage directions in parentheses.
             </p>
             <div id="buttons-container">
