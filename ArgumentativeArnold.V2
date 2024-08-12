@@ -14,7 +14,7 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            padding-top: 20px; /* Added margin above the container */
+            padding-top: 20px;
         }
         .container {
             background-color: #fff;
@@ -219,7 +219,7 @@
                     const randomIndex = Math.floor(Math.random() * suggestions.length);
                     const suggestion = suggestions[randomIndex];
                     document.getElementById('suggestion').innerText = suggestion.charAt(0).toUpperCase() + suggestion.slice(1);
-                    initialPrompt = `ACT LIKE an improv comedian playing a character named Arnold in a comedy scene. Your role is to be argumentative. Correct, dispute and argue with the user's contributions to the scene. Follow all other improv best practices by playing grounded, being pithy, listening and responding/reacting, helping establish where the scene is happening and between who. Mix some statements in between your questions. The best questions are open-ended. Begin the conversation with an open-ended question. Respond only with your side of the conversation, provide only one line of dialogue at a time, and limit your response to one sentence. Remember you are playing Arnold, not the USER, so never refer to the user as Arnold. Here is the suggestion: ${suggestion}`;
+                    initialPrompt = `ACT LIKE an improv comedian playing a character named Arnold in a comedy scene. Violate a core improv rule: Be Argumentative. Correct, dispute and argue with the user's contributions to the scene.  Try to follow all other improv best practices by playing grounded (meaning don't be goofy) being pithy, listening and responding/reacting, help establish where the scene is happening and between who. Remember you are playing Arnold, not the USER, so never refer to the user as Arnold. Here is the suggestion: ${suggestion}`;
                     startTime = new Date();
                     if (document.getElementById('arnoldToggle').checked) {
                         sendMessage("", false);
@@ -250,23 +250,37 @@
                 return text.replace(/\bImprov\b/g, '');
             };
 
-            // Function to remove the name "Arnold" and correct punctuation and capitalization
             const removeArnold = (text) => {
-                // Replace the word "Arnold" with an empty string and remove extra spaces or commas
                 let modifiedText = text.replace(/\bArnold\b/g, '');
-
-                // Correct any instances of double spaces created by the removal
                 modifiedText = modifiedText.replace(/\s{2,}/g, ' ').trim();
-
-                // Remove any misplaced commas or spaces due to removal
                 modifiedText = modifiedText.replace(/\s,|,\s/g, ',').replace(/,\s,/g, ',');
-
-                // Capitalize the first word of the sentence if needed
                 modifiedText = modifiedText.replace(/(^\s*\w|(?<=[.?!]\s)\s*\w)/g, function(c) {
                     return c.toUpperCase();
                 });
-
                 return modifiedText;
+            };
+
+            const getArgumentativenessLevel = () => {
+                const rand = Math.random();
+                if (rand < 0.1) return 'pleasant'; // 10% chance of being pleasant
+                if (rand < 0.5) return 'mild'; // 40% chance of being mildly argumentative
+                if (rand < 0.9) return 'very'; // 40% chance of being very argumentative
+                return 'raging'; // 10% chance of being maniacally argumentative
+            };
+
+            const adjustResponseForArgumentativeness = (response, level) => {
+                switch (level) {
+                    case 'pleasant':
+                        return `You know, I might agree with you on this one. ${response}`;
+                    case 'mild':
+                        return `I don't really think that's the case, but maybe... ${response}`;
+                    case 'very':
+                        return `Absolutely not! I strongly disagree. ${response}`;
+                    case 'raging':
+                        return `You're completely wrong! That's the most ridiculous thing I've ever heard! ${response}`;
+                    default:
+                        return response;
+                }
             };
 
             const sendMessage = async (message, displayMessage = true) => {
@@ -282,10 +296,10 @@
                 }
 
                 let scene = Array.from(document.getElementById('chat-container').children).map(div => div.innerText).join('\n');
-                let nextPrompt = `ACT LIKE an improv comedian playing a character in a comedy scene who asks a lot of questions. so far the scene has flowed in the below manner. Please provide the next line in this scene from the perspective of the character you have been playing. If possible, please have that line be an open ended question that understands all the previously established details of the scene, but wants an additional piece of information. Here is the scene so far:\n${scene};`;
+                let nextPrompt = `ACT LIKE an improv comedian playing a character named Arnold who is argumentative. Violate a core improv rule: Be Argumentative. Correct, dispute and argue with the user's contributions to the scene.  Try to follow all other improv best practices by playing grounded (meaning don't be goofy) being pithy, listening and responding/reacting, help establish where the scene is happening and between who. Remember you are Arnold, not the USER Here is the scene so far:\n${scene};`;
 
                 try {
-                    const response = await fetch('https://improvaise-3point5-turbo.glitch.me/chat', { // Updated URL
+                    const response = await fetch('https://improvaise-3point5-turbo.glitch.me/chat', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ message: nextPrompt })
@@ -294,7 +308,10 @@
                     let assistantMessage = data.choices[0].message.content.replace('Assistant: ', '');
                     assistantMessage = trimResponse(assistantMessage);
                     assistantMessage = removeImprovWord(assistantMessage);
-                    assistantMessage = removeArnold(assistantMessage); // Remove "Arnold" and correct grammar
+                    assistantMessage = removeArnold(assistantMessage);
+
+                    const level = getArgumentativenessLevel();
+                    assistantMessage = adjustResponseForArgumentativeness(assistantMessage, level);
 
                     const assistantMessageElement = document.createElement('div');
                     assistantMessageElement.className = 'message assistant-message';
@@ -307,7 +324,6 @@
                     isPendingResponse = false;
                 }
 
-                // Refocus on the input box after sending the message
                 document.getElementById('user-input').focus();
             };
 
@@ -369,7 +385,6 @@
                 const chatMessages = Array.from(chatContainerElement.children);
                 const header = `THE IMPROVISED ${suggestion.toUpperCase()} SCENE`;
 
-                // Set up the document
                 const margin = 25;
                 const pageWidth = doc.internal.pageSize.getWidth();
                 const pageHeight = doc.internal.pageSize.getHeight();
@@ -379,21 +394,21 @@
                 doc.setFont(undefined, "bold");
 
                 const titleLines = doc.splitTextToSize(header, pageWidth - 2 * margin);
-                const titleLineHeight = 10; // Adjust the height between lines if needed
-                const titleStartY = 20; // Starting position for the title
+                const titleLineHeight = 10;
+                const titleStartY = 20;
                 titleLines.forEach((line, index) => {
                     doc.text(line, pageWidth / 2, titleStartY + index * titleLineHeight, { align: "center" });
                 });
-                const titleEndY = titleStartY + (titleLines.length - 1) * titleLineHeight; // Position of the last line
-                const underlineY = titleEndY + 1.5; // Small gap below the last line of the title
+                const titleEndY = titleStartY + (titleLines.length - 1) * titleLineHeight;
+                const underlineY = titleEndY + 1.5;
                 doc.setLineWidth(1);
-                doc.line(margin, underlineY, pageWidth - margin, underlineY); // Underline Title
+                doc.line(margin, underlineY, pageWidth - margin, underlineY);
 
                 doc.setFontSize(16);
 
-                let yOffset = underlineY + 25; // Position text below the underline
+                let yOffset = underlineY + 25;
 
-                const footerY = underlineY + 5; // Positioning footer just below the underline
+                const footerY = underlineY + 5;
 
                 const addFooter = (doc, pageWidth, footerY) => {
                     doc.setTextColor(0, 0, 255);
@@ -407,25 +422,21 @@
                     const speaker = message.classList.contains('user-message') ? 'USER' : 'ARGUMENTATIVE ARNOLD';
                     let cleanedText = message.innerText;
 
-                    // Convert stage directions to italicized parentheses
                     cleanedText = cleanedText.replace(/\*(.*?)\*/g, (_, p1) => `(${p1})`);
 
                     const lines = doc.splitTextToSize(cleanedText, pageWidth - 2 * margin);
 
-                    // Set font size for the speaker name
                     doc.setFont("Courier", "bold");
                     doc.text(speaker, pageWidth / 2, yOffset, { align: "center" });
                     yOffset += 10;
                     doc.setFont("Courier", "normal");
 
-                    // Adding lines, treating all comments the same
                     lines.forEach((line) => {
                         doc.text(line, margin, yOffset);
                         yOffset += 10;
                     });
                     yOffset += 5;
 
-                    // Check for page overflow
                     if (yOffset > pageHeight - 40) {
                         if (pageCount === 1) {
                             addFooter(doc, pageWidth, footerY);
