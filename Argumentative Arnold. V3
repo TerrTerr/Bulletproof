@@ -272,9 +272,9 @@
             const generateNextPrompt = (scene, level) => {
                 switch (level) {
                     case 'pleasant':
-                        return `${scene}\nDon't really like what the USER is saying but go along with it begrudgingly.`;
+                        return `${scene}\nDon't really like what the USER is saying but go along with it begrudgingly. If possible add information about the larger world the two characters are in, possibly information about what activity they are engaged in, qualities one or both of the characters have (you are very diligent or I know a lot about car engines are good examples.) or where the scene is taking place (an apartment or a diner or a bowling aley are good examples). Don't just insert this info into the scene out of thin air, try to transition into adding the information by connecting it to something already said in the scene.`;
                     case 'mild':
-                        return `${scene}\nThe USER is being stupid, and it is up to you again to have to tell the USER. Use your next line to do that.`;
+                        return `${scene}\nThe USER is being stupid, and it is up to you again to have to tell the USER. Use your next line to do that. But If possible, also add information about the larger world the two characters are in, possibly information about what activity they are engaged in, or where the scene is taking place (an apartment or a diner or a bowling aley are good examples). Don't just insert this info into the scene out of thin air, try to transition into adding the information by connecting it to something already said in the scene.`;
                     case 'very':
                         return `${scene}\nThe USER is really, really wrong, and it is making your blood pressure rise. Express that along with why the USER is so aggravating.`;
                     case 'raging':
@@ -311,6 +311,11 @@
                     assistantMessage = trimResponse(assistantMessage);
                     assistantMessage = removeImprovWord(assistantMessage);
                     assistantMessage = removeArnold(assistantMessage);
+
+                    // Check if level is 'raging' and convert the message to uppercase if true
+                    if (level === 'raging') {
+                        assistantMessage = assistantMessage.toUpperCase();
+                    }
 
                     const assistantMessageElement = document.createElement('div');
                     assistantMessageElement.className = 'message assistant-message';
@@ -457,3 +462,5 @@
     </script>
 </body>
 </html>
+
+
