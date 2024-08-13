@@ -241,9 +241,8 @@
                 response = response.replace(/\n/g, ' ');
                 response = response.replace(/[^ ]+:/g, '');
                 const sentences = response.match(/[^.!?]+[.!?]+/g) || [response];
-                const titles = ["Mr.", "Mrs.", "Ms.", "Dr.", "Prof.", "Esq."];
-                if (sentences.length > 1) {
-                    return sentences.filter((sentence) => !titles.some((title) => sentence.includes(title)))[0];
+                if (sentences.length > 2) {
+                    return sentences.slice(0, 2).join(' ');
                 }
                 return response;
             };
@@ -279,7 +278,7 @@
                     case 'very':
                         return `${scene}\nThe USER is really, really wrong, and it is making your blood pressure rise. Express that along with why the USER is so aggravating.`;
                     case 'raging':
-                        return `${scene}\nThe idea that the USER could be this mind-bogglingly wrong is earth-shatteringly infuriating!!!`;
+                        return `${scene}\nTHE IDEA THAT THE USER COULD BE THIS MIND-BOGGLINGLY WRONG IS EARTH-SHATTERINGLY INFURIATING!!!`;
                     default:
                         return `${scene}`;
                 }
