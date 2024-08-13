@@ -251,6 +251,21 @@
                 return text.replace(/\bImprov\b/g, '');
             };
 
+            const replaceUserWord = (text) => {
+                // Replace "the USER" with "you"
+                text = text.replace(/\bthe USER\b/gi, 'you');
+
+                // Replace "USER" at the start of a sentence with "You"
+                text = text.replace(/\bUSER\b/g, (match, offset, string) => {
+                    if (offset === 0 || string[offset - 2] === '.' || string[offset - 2] === '!' || string[offset - 2] === '?') {
+                        return 'You';
+                    }
+                    return '';
+                });
+
+                return text;
+            };
+
             const removeArnold = (text) => {
                 let modifiedText = text.replace(/\bArnold\b/g, '');
                 modifiedText = modifiedText.replace(/\s{2,}/g, ' ').trim();
@@ -264,7 +279,8 @@
             const getArgumentativenessLevel = () => {
                 const rand = Math.random();
                 if (rand < 0.1) return 'pleasant'; // 10% chance of being pleasant
-                if (rand < 0.5) return 'mild'; // 40% chance of being mildly argumentative
+                if (rand < 0.2) return 'mildHelpful'; // 10% chance of being mildly argumentative and helpful
+                if (rand < 0.2) return 'mild'; // 10% chance of being mildly argumentative and helpful
                 if (rand < 0.9) return 'very'; // 40% chance of being very argumentative
                 return 'raging'; // 10% chance of being maniacally argumentative
             };
@@ -273,8 +289,10 @@
                 switch (level) {
                     case 'pleasant':
                         return `${scene}\nDon't really like what the USER is saying but go along with it begrudgingly. If possible add information about the larger world the two characters are in, possibly information about what activity they are engaged in, qualities one or both of the characters have (you are very diligent or I know a lot about car engines are good examples.) or where the scene is taking place (an apartment or a diner or a bowling aley are good examples). Don't just insert this info into the scene out of thin air, try to transition into adding the information by connecting it to something already said in the scene.`;
-                    case 'mild':
+                    case 'mildHelpful':
                         return `${scene}\nThe USER is being stupid, and it is up to you again to have to tell the USER. Use your next line to do that. But If possible, also add information about the larger world the two characters are in, possibly information about what activity they are engaged in, or where the scene is taking place (an apartment or a diner or a bowling aley are good examples). Don't just insert this info into the scene out of thin air, try to transition into adding the information by connecting it to something already said in the scene.`;
+                    case 'mild':
+                        return `${scene}\nThe USER is being stupid, and it is up to you again to have to tell the USER.`;
                     case 'very':
                         return `${scene}\nThe USER is really, really wrong, and it is making your blood pressure rise. Express that along with why the USER is so aggravating.`;
                     case 'raging':
@@ -310,6 +328,7 @@
                     let assistantMessage = data.choices[0].message.content.replace('Assistant: ', '');
                     assistantMessage = trimResponse(assistantMessage);
                     assistantMessage = removeImprovWord(assistantMessage);
+                    assistantMessage = replaceUserWord(assistantMessage);
                     assistantMessage = removeArnold(assistantMessage);
 
                     // Check if level is 'raging' and convert the message to uppercase if true
