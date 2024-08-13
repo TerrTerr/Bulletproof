@@ -280,7 +280,7 @@
                 const rand = Math.random();
                 if (rand < 0.1) return 'pleasant'; // 10% chance of being pleasant
                 if (rand < 0.2) return 'mildHelpful'; // 10% chance of being mildly argumentative and helpful
-                if (rand < 0.2) return 'mild'; // 10% chance of being mildly argumentative and helpful
+                if (rand < 0.4) return 'mild'; // 10% chance of being mildly argumentative and helpful
                 if (rand < 0.9) return 'very'; // 40% chance of being very argumentative
                 return 'raging'; // 10% chance of being maniacally argumentative
             };
