@@ -205,8 +205,31 @@
         let initialPrompt;
         let startTime;
         let isPendingResponse = false;
+        let unrelatedLine = '';
 
         const systemPrompt = `ACT LIKE an improv comedian playing a character named Steve in a comedy scene. Violate a core improv rule: Be a Steamroller. Cut off the user's contributions to the scene. Try to follow all other improv best practices by playing grounded (meaning don't be goofy), being pithy, listening and responding/reacting, and helping to establish where the scene is happening and between who. Remember you are playing Steve, not the USER, so never refer to the user as Steve. You may respond with up to two sentences.`;
+
+        const fetchUnrelatedLine = async () => {
+            try {
+                const unrelatedPrompt = "Give me a completely unrelated line, something off-topic or random that has nothing to do with the current conversation.";
+                const response = await fetch('https://improvaise-3point5-turbo.glitch.me/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: unrelatedPrompt })
+                });
+                const data = await response.json();
+                unrelatedLine = data.choices[0].message.content.trim();
+                console.log("Unrelated Line Selected:", unrelatedLine); // Log the unrelated line
+                return unrelatedLine;
+            } catch (error) {
+                console.error('Error fetching unrelated line:', error);
+                return "Did you know that koalas sleep for 18 hours a day?"; // Fallback line in case of error
+            }
+        };
+
+        const addUnrelatedLineToScene = (scene) => {
+            return `${unrelatedLine}\n${scene}`;
+        };
 
         document.addEventListener('DOMContentLoaded', function() {
             fetch('https://raw.githubusercontent.com/TerrTerr/Initiation_Practice2/main/suggestions.csv')
@@ -216,7 +239,7 @@
                 })
                 .catch(error => console.error('Error fetching suggestions:', error));
 
-            document.getElementById('suggestionButton').addEventListener('click', function() {
+            document.getElementById('suggestionButton').addEventListener('click', async function() {
                 if (suggestions.length > 0) {
                     const randomIndex = Math.floor(Math.random() * suggestions.length);
                     const suggestion = suggestions[randomIndex];
@@ -224,7 +247,8 @@
                     initialPrompt = `ACT LIKE an improv comedian playing a character named Steve in a comedy scene. Violate a core improv rule: Be a Steamroller. Cut off the user's contributions to the scene. Try to follow all other improv best practices by playing grounded (meaning don't be goofy), being pithy, listening and responding/reacting, and helping to establish where the scene is happening and between who. Here is the suggestion: ${suggestion}`;
                     startTime = new Date();
                     if (document.getElementById('steveToggle').checked) {
-                        sendMessage("", false);
+                        unrelatedLine = await fetchUnrelatedLine(); // Fetch and store the unrelated line
+                        sendMessage("", false, true); // Steve initiates with unrelated line on second message
                     }
                 } else {
                     console.log('No suggestions available');
@@ -235,6 +259,7 @@
                 document.getElementById('chat-container').innerHTML = '';
                 document.getElementById('suggestion').innerText = '';
                 document.getElementById('user-input').value = '';
+                unrelatedLine = ''; // Reset unrelated line when wiping the scene
             });
 
             const trimResponse = (response) => {
@@ -281,7 +306,7 @@
                 return text;
             };
 
-            const sendMessage = async (message, displayMessage = true) => {
+            const sendMessage = async (message, displayMessage = true, isSteveInitiation = false) => {
                 if (isPendingResponse) return;
                 isPendingResponse = true;
 
@@ -296,6 +321,10 @@
 
                 let scene = Array.from(document.getElementById('chat-container').children).map(div => div.innerText).join('\n');
                 let nextPrompt = scene;
+
+                if (isSteveInitiation && unrelatedLine) {
+                    nextPrompt = addUnrelatedLineToScene(nextPrompt); // Add unrelated line to the scene
+                }
 
                 try {
                     const response = await fetch('https://improvaise-3point5-turbo.glitch.me/chat', {
@@ -455,3 +484,4 @@
     </script>
 </body>
 </html>
+
