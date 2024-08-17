@@ -175,7 +175,7 @@
                     <input type="checkbox" id="userToggle" checked>
                     <label for="userToggle" title="Initiate the scene yourself.">You Initiate</label>
                     <input type="checkbox" id="steveToggle">
-                    <label for="steveToggle" title="Steve The Steamroller initiates the scene once there is a suggestion.">Steve The Steamroller Initiates</label>
+                    <label for="steveToggle" title="Steve The Steamroller initiates the scene once there is a suggestion.">Steve Initiates</label>
                 </div>
             </div>
             <div class="buttons-container">
